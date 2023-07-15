@@ -1,0 +1,22 @@
+
+- add category to workshop item
+
+- show total amount of online public MP lobbies
+
+- Send log to keeperfx.net on crash (finish endpoint)
+    - crash report should get an identifier from the server
+    - crash report should include version number
+
+- [MP Connect] 
+    - uses -join <ip>:<port>
+
+- On Install:
+    - Do you want to use ImpLauncher's recommended settings?
+
+- run startup checks again after install?
+    - i want to make sure the cfg file is loaded
+
+
+make sure resolution works correctly after install
+
+epilepsy

@@ -1,0 +1,10 @@
+{
+    "implauncher": "ImpLauncher",
+    "play": "Play",
+    "install": "Install",
+    "settings": "Settings",
+    "workshop": "Workshop",
+    "error": {
+        "failed_to_open_webbrowser": "Failed to open webbrowser."
+    }
+}
