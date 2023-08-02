@@ -223,7 +223,7 @@ public class Settings extends JDialog {
 
     private JPanel inputPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Mouse Sensitivity\n(1-100, 0 = raw)", this.mouseSensitivityField, 40));
+        panel.add(this.createSettingOption("Mouse Sensitivity %\n(0 = raw input)", this.mouseSensitivityField, 40));
         panel.add(this.createSettingOption("Alternative Input", this.altInputCheckBox, 40));
         panel.add(this.createSettingOption("Unlock cursor when paused", this.unlockCursorOnPauseCheckBox, 40));
         panel.add(this.createSettingOption("Screen edge camera panning", this.screenEdgeCameraPanCheckBox, 40));
