@@ -112,7 +112,7 @@ public class Settings extends JDialog {
 
         // Left panel
         JPanel panelLeft = new JPanel(new BorderLayout());
-        panelLeft.setBackground(new Color(0, 0, 0, 40));
+        panelLeft.setBackground(new Color(32, 32, 32));
         panelLeft.setPreferredSize(new Dimension(160, 500));
         panelLeft.setBorder(new EmptyBorder(6, 6, 6, 6));
         this.add(panelLeft, BorderLayout.LINE_START);
@@ -121,7 +121,7 @@ public class Settings extends JDialog {
 
         // Top part of left panel
         this.panelLeftTop = new JPanel(new GridLayout(0, 1, 6, 6));
-        this.panelLeftTop.setBackground(new Color(0, 0, 0, 0));
+        this.panelLeftTop.setBackground(new Color(32, 32, 32));
         panelLeft.add(this.panelLeftTop, BorderLayout.PAGE_START);
 
         // Left panel menu items
@@ -138,7 +138,7 @@ public class Settings extends JDialog {
 
         // Bottom part of left panel
         JPanel panelLeftBottom = new JPanel(new GridLayout(0, 1, 6, 6));
-        panelLeftBottom.setBackground(new Color(0, 0, 0, 0));
+        panelLeftBottom.setBackground(new Color(32, 32, 32));
         panelLeft.add(panelLeftBottom, BorderLayout.PAGE_END);
 
         // "Save" button (Bottom, Right panel)
@@ -151,7 +151,6 @@ public class Settings extends JDialog {
         // "Close" button (Bottom, Right panel)
         JButton closeButton = GuiUtil.createDefaultButton("Close");
         closeButton.setPreferredSize(new Dimension(150, 50));
-        // closeButton.setBackground(new Color(30, 30, 30, 60));
         closeButton.addActionListener(e -> this.dispose());
         panelLeftBottom.add(closeButton);
 
@@ -325,7 +324,7 @@ public class Settings extends JDialog {
 
         JLabel label = new JLabel("<html>" + labelText + "</html>");
         label.setBorder(new EmptyBorder(0, 0, 0, 20));
-        label.setPreferredSize(new Dimension(160, maxHeight + 32));
+        label.setPreferredSize(new Dimension(180, maxHeight + 32));
 
         optionPanel.add(label, BorderLayout.LINE_START);
         optionPanel.add(component, BorderLayout.CENTER);

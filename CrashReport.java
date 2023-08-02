@@ -179,7 +179,6 @@ public class CrashReport extends JDialog {
 
         // "Close" button
         closeButton.setPreferredSize(new Dimension(150, 50));
-        // closeButton.setBackground(new Color(30, 30, 30, 60));
         closeButton.setBackground(new Color(100, 100, 100));
         closeButton.addActionListener(e -> this.dispose());
         closeButton.setEnabled(true);

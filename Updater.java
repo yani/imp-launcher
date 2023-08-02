@@ -216,7 +216,7 @@ public class Updater {
 
         // "Close" button
         closeButton.setPreferredSize(new Dimension(150, 50));
-        closeButton.setBackground(new Color(30, 30, 30, 60));
+        closeButton.setBackground(new Color(45, 45, 45));
         closeButton.addActionListener(e -> this.dialog.dispose());
         closeButton.setEnabled(true);
         cancelButton.setVisible(true);
@@ -224,7 +224,7 @@ public class Updater {
 
         // "Cancel" button
         cancelButton.setPreferredSize(new Dimension(150, 50));
-        cancelButton.setBackground(new Color(30, 30, 30, 60));
+        cancelButton.setBackground(new Color(45, 45, 45));
         cancelButton.addActionListener(e -> {
             if (this.updateThread != null) {
                 this.updateThread.interrupt();

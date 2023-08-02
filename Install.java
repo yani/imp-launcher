@@ -75,7 +75,7 @@ public class Install extends JDialog {
         JLabel dkPathLabel = new JLabel("<html>" + dkPathText + "</html>");
         JPanel dkPathPanel = new JPanel(new BorderLayout());
         dkPathPanel.add(dkPathLabel, BorderLayout.NORTH);
-        dkPathPanel.setBackground(new Color(0, 0, 0, 0));
+        dkPathPanel.setBackground(new Color(50, 50, 50));
         dkPathPanel.setPreferredSize(new Dimension(460, 20));
         mainPanel.add(dkPathPanel);
 
@@ -110,7 +110,7 @@ public class Install extends JDialog {
         ////////////////////////////////////////////////////////////////////////
 
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        optionsPanel.setBackground(new Color(0, 0, 0, 0));
+        optionsPanel.setBackground(new Color(50, 50, 50));
         optionsPanel.setPreferredSize(new Dimension(460, 70));
         optionsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
         mainPanel.add(optionsPanel);
@@ -144,7 +144,7 @@ public class Install extends JDialog {
         // "Close" button
         JButton closeButton = GuiUtil.createDefaultButton("Close");
         closeButton.setPreferredSize(new Dimension(150, 50));
-        closeButton.setBackground(new Color(30, 30, 30, 60));
+        closeButton.setBackground(new Color(45, 45, 45));
         closeButton.addActionListener(e -> this.dispose());
         closeButton.setEnabled(true);
         bottomPanel.add(closeButton, BorderLayout.PAGE_END);

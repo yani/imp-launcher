@@ -73,7 +73,7 @@ public class Theme {
             UIManager.put("ProgressBar.background", new Color(32, 32, 32));
             UIManager.put("ProgressBar.selectionBackground", new Color(230, 230, 230));
             UIManager.put("ProgressBar.foreground", new Color(52, 52, 52));
-            UIManager.put("ProgressBar.border", new ColorUIResource(new Color(0, 0, 0, 250)));
+            UIManager.put("ProgressBar.border", new ColorUIResource(new Color(32, 32, 32)));
             // ScrollPane
             UIManager.put("ScrollPane.background", new Color(45, 45, 45));
 
