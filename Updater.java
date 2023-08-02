@@ -376,7 +376,7 @@ public class Updater {
                 tempFilePath = Files.createTempFile("tmp-", fileName);
                 System.out.println("Temp file: " + tempFilePath);
 
-                // Create the GEt request
+                // Create the GET request
                 HttpRequest downloadRequest = httpRequestBuilder
                         .method("GET", HttpRequest.BodyPublishers.noBody())
                         .build();
