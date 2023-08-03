@@ -17,6 +17,8 @@ import javax.swing.border.EmptyBorder;
 
 public class Main extends JFrame {
 
+    public static Main main;
+
     public static String impLauncherVersion = "0.1.1";
 
     public static String launcherRootDir;
@@ -40,7 +42,7 @@ public class Main extends JFrame {
         Theme.setupTheme();
 
         // Create Main GUI
-        Main mainGUI = new Main();
+        Main.main = new Main();
 
         // Check if debugger is attached
         boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString()
@@ -61,7 +63,7 @@ public class Main extends JFrame {
             // Set launcher root dir
             // Location of the dir the .jar file is located in.
             try {
-                URL classJarLocation = mainGUI.getClass().getProtectionDomain().getCodeSource().getLocation();
+                URL classJarLocation = Main.main.getClass().getProtectionDomain().getCodeSource().getLocation();
                 System.out.println("Class Jar Loc: " + classJarLocation);
                 if (classJarLocation != null) {
                     Path classJarPath = Paths.get(classJarLocation.toURI());
@@ -82,7 +84,7 @@ public class Main extends JFrame {
         }
 
         // Run startup checks
-        mainGUI.appStartup();
+        Main.main.appStartup();
 
         // Load run options
         Main.runOptions = new RunOptions();
@@ -267,13 +269,10 @@ public class Main extends JFrame {
         // Define KeeperFX version
         if (Main.kfxVersion.contains("Prototype")) {
             Main.kfxReleaseType = KfxReleaseType.PROTOTYPE;
-            this.setTitle("KeeperFX (Prototype) - ImpLauncher");
         } else if (Main.kfxVersion.contains("Alpha")) {
             Main.kfxReleaseType = KfxReleaseType.ALPHA;
-            this.setTitle("KeeperFX (" + this.kfxVersion + ") - ImpLauncher " + this.impLauncherVersion);
         } else {
             Main.kfxReleaseType = KfxReleaseType.STABLE;
-            this.setTitle("KeeperFX - ImpLauncher");
         }
 
         // Handle possible self-update
@@ -341,6 +340,7 @@ public class Main extends JFrame {
     }
 
     public static void updateDisplayVersion() {
+        Main.main.setTitle("KeeperFX (" + Main.kfxVersion + ") - ImpLauncher " + Main.impLauncherVersion);
         Main.versionLabel.setText(Main.kfxVersion);
         Main.versionLabel.repaint();
         Main.versionLabel.getParent().repaint();
