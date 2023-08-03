@@ -115,7 +115,7 @@ public class SelfUpdater {
 
         System.out.println("Latest ImpLauncher version on KFX workshop: " + newVersion);
 
-        if (newVersion != Main.impLauncherVersion) {
+        if (newVersion.equals(Main.impLauncherVersion) == false) {
             System.out.println("ImpLauncher version does not match. Asking user to update..");
             this.showSelfUpdaterUI(newVersion, (String) latestFile.get("url"));
         }

@@ -17,7 +17,7 @@ import javax.swing.border.EmptyBorder;
 
 public class Main extends JFrame {
 
-    public static String impLauncherVersion = "0.1.0";
+    public static String impLauncherVersion = "0.1.1";
 
     public static String launcherRootDir;
 
