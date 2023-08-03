@@ -17,6 +17,8 @@ import javax.swing.border.EmptyBorder;
 
 public class Main extends JFrame {
 
+    public static String impLauncherVersion = "0.1.0";
+
     public static String launcherRootDir;
 
     public static KfxReleaseType kfxReleaseType;
@@ -268,11 +270,15 @@ public class Main extends JFrame {
             this.setTitle("KeeperFX (Prototype) - ImpLauncher");
         } else if (Main.kfxVersion.contains("Alpha")) {
             Main.kfxReleaseType = KfxReleaseType.ALPHA;
-            this.setTitle("KeeperFX (Alpha) - ImpLauncher");
+            this.setTitle("KeeperFX (" + this.kfxVersion + ") - ImpLauncher " + this.impLauncherVersion);
         } else {
             Main.kfxReleaseType = KfxReleaseType.STABLE;
             this.setTitle("KeeperFX - ImpLauncher");
         }
+
+        // Handle possible self-update
+        SelfUpdater selfUpdater = new SelfUpdater(this);
+        selfUpdater.checkForUpdates();
 
         // Handle possible updates
         // Only when release is STABLE or ALPHA
