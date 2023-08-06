@@ -30,15 +30,6 @@ public class InstallFiles {
             "DATA" + File.separator + "WHITEPAL.COL",
     };
 
-    public static String[] gogMusicFiles = {
-            "keeper02.ogg",
-            "keeper03.ogg",
-            "keeper04.ogg",
-            "keeper05.ogg",
-            "keeper06.ogg",
-            "keeper07.ogg",
-    };
-
     public static String[] kfxFiles = {
             "data" + File.separator + "bluepal.dat",
             "data" + File.separator + "bluepall.dat",
@@ -51,6 +42,29 @@ public class InstallFiles {
             "data" + File.separator + "slab0-1.dat",
             "data" + File.separator + "vampal.pal",
             "data" + File.separator + "whitepal.col",
+    };
+
+    public static String[] manualInstallFiles = {
+            "data" + File.separator + "BLUEPAL.DAT",
+            "data" + File.separator + "BLUEPALL.DAT",
+            "data" + File.separator + "DOGPAL.PAL",
+            "data" + File.separator + "HITPALL.DAT",
+            "data" + File.separator + "LIGHTNG.PAL",
+            "data" + File.separator + "REDPAL.COL",
+            "data" + File.separator + "REDPALL.DAT",
+            "data" + File.separator + "SLAB0-0.DAT",
+            "data" + File.separator + "SLAB0-1.DAT",
+            "data" + File.separator + "VAMPAL.PAL",
+            "data" + File.separator + "WHITEPAL.COL",
+    };
+
+    public static String[] gogMusicFiles = {
+            "keeper02.ogg",
+            "keeper03.ogg",
+            "keeper04.ogg",
+            "keeper05.ogg",
+            "keeper06.ogg",
+            "keeper07.ogg",
     };
 
     public static String[] kfxMusicFiles = {

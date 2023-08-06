@@ -165,7 +165,7 @@ public class Install extends JDialog {
 
     public void installAction() {
 
-        InstallType installType = InstallType.KFX;
+        InstallType installType = null;
 
         this.clearOutput();
 
@@ -207,7 +207,7 @@ public class Install extends JDialog {
         }
 
         // Check for CD '/keeper' DIR
-        if (installType != InstallType.CD) {
+        if (installType == null) {
             File dkPathDSetupFile = new File(dkDir.getPath() + "/dsetup.dll");
             File dkPathWinSetup = new File(dkDir.getPath() + "/winsetup");
             if (dkPathDSetupFile.exists() && dkPathWinSetup.exists()) {
@@ -217,9 +217,38 @@ public class Install extends JDialog {
         }
 
         // Check for GOG
-        File gogFile = new File(dkDir.getPath() + "/game.gog");
-        if (gogFile.exists()) {
-            installType = InstallType.GOG;
+        if (installType == null) {
+            File gogFile = new File(dkDir.getPath() + "/game.gog");
+            if (gogFile.exists()) {
+                installType = InstallType.GOG;
+                this.printOutput("'game.gog' file found");
+            }
+        }
+
+        // Check for a manual installation
+        // This also works for the common Lutris install script
+        if (installType == null) {
+            File manualInstallFile = new File(dkDir.getPath() + "/data/BLUEPAL.DAT");
+            if (manualInstallFile.exists()) {
+                installType = InstallType.MANUAL;
+                this.printOutput("'data/BLUEPAL.DAT' file found");
+            }
+        }
+
+        // Check for KFX installation
+        if (installType == null) {
+            File kfxFile = new File(dkDir.getPath() + "/keeperfx.exe");
+            if (kfxFile.exists()) {
+                installType = InstallType.KFX;
+                this.printOutput("'keeperfx.exe' file found");
+            }
+        }
+
+        // Make sure we now know what installation the user has
+        if (installType == null) {
+            this.printOutput("Unable to determine Dungeon Keeper installation type");
+            this.showFailureAlert();
+            return;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -277,6 +306,11 @@ public class Install extends JDialog {
         // Uses a pre-existing KFX installation (mostly for power users)
         if (installType == InstallType.KFX) {
             installResult = this.installUsingKFX(dkDir);
+        }
+
+        // Handle manual installation
+        if (installType == InstallType.MANUAL) {
+            installResult = this.installUsingManualInstall(dkDir);
         }
 
         if (installResult == false) {
@@ -361,6 +395,11 @@ public class Install extends JDialog {
 
     public boolean installUsingKFX(File dkRootDir) {
         return this.installDefault(dkRootDir, InstallFiles.kfxFiles);
+    }
+
+    public boolean installUsingManualInstall(File dkRootDir) {
+        // This installation has a wrong file structure, but we'll support it regardless
+        return this.installDefault(dkRootDir, InstallFiles.manualInstallFiles);
     }
 
     private boolean installDefault(File dkRootDir, String[] sourceFiles) {
