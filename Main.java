@@ -207,7 +207,6 @@ public class Main extends JFrame {
             }
         } catch (Exception ex) {
         }
-        permissionResult = false;
         if (permissionResult == false) {
 
             String permissionMessage = "Insufficient file permissions.\n" +
