@@ -19,7 +19,7 @@ public class Main extends JFrame {
 
     public static Main main;
 
-    public static String impLauncherVersion = "0.1.3";
+    public static String impLauncherVersion = "0.1.4";
 
     public static String launcherRootDir;
 
@@ -191,6 +191,33 @@ public class Main extends JFrame {
         if (!Desktop.isDesktopSupported()) {
             JOptionPane.showMessageDialog(this, "This desktop is not supported", "ImpLauncher Error",
                     JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            return;
+        }
+
+        // Make sure we have permissions in the root directory
+        // KeeperFX also needs to have permission so we can just force it
+        File tempPermissionTestFile = new File(Main.launcherRootDir + File.separator + "implauncher.tmp");
+        boolean permissionResult = false;
+        try {
+            if (tempPermissionTestFile.createNewFile()) {
+                if (tempPermissionTestFile.delete()) {
+                    permissionResult = true;
+                }
+            }
+        } catch (Exception ex) {
+        }
+        permissionResult = false;
+        if (permissionResult == false) {
+
+            String permissionMessage = "Insufficient file permissions.\n" +
+                    "ImpLauncher can not edit the files in the KeeperFX directory.";
+
+            if (System.getProperty("os.name").toLowerCase().contains("windows") == true) {
+                permissionMessage += "\n\nIt's suggested to move KeeperFX to a location like: 'C:\\Games\\KeeperFX'\n";
+            }
+
+            JOptionPane.showMessageDialog(this, permissionMessage, "ImpLauncher Error", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
             return;
         }
