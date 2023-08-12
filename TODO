@@ -1,11 +1,9 @@
 
+- CHECK FOR FILE PERMISSIONS!
+
 - add category to workshop item
 
 - show total amount of online public MP lobbies
-
-- Send log to keeperfx.net on crash (finish endpoint)
-    - crash report should get an identifier from the server
-    - crash report should include version number
 
 - [MP Connect] 
     - uses -join <ip>:<port>
@@ -16,7 +14,9 @@
 - run startup checks again after install?
     - i want to make sure the cfg file is loaded
 
+- make sure resolution works correctly after install
 
-make sure resolution works correctly after install
+- epilepsy thingy?
 
-epilepsy
+- Crash Report
+    - If a savefile is added, check if it contains the campaign/mapnumber and if it's not a default one, we'll try and add it to the download
