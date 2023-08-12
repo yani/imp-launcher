@@ -1,38 +1,65 @@
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.rauschig.jarchivelib.ArchiveFormat;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 import org.rauschig.jarchivelib.CompressionType;
 
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class CrashReport extends JDialog {
+
+    public static String endPointURI = "https://keeperfx.net/api/v1/crash-report";
 
     private Main mainWindow;
 
     private JTextArea descriptionArea = new JTextArea();
     private JComboBox<SaveFile> saveGameBox;
-    private JTextArea gameOutputArea = new JTextArea();
-    private JTextArea kfxLogArea = new JTextArea();
+
+    private String kfxLog = "";
+    private String gameConsoleOutput = "";
 
     private JButton closeButton = GuiUtil.createDefaultButton("Close");
     private JButton sendButton = GuiUtil.createDefaultButton("Send");
 
     public CrashReport(Main mainWindow, String gameConsoleOutput) {
 
+        // Load stuff
         this.mainWindow = mainWindow;
+        this.gameConsoleOutput = gameConsoleOutput;
 
+        // Load keeperfx.log
+        // We load this before the user clicks 'Send' just as a precaution.
+        File kfxLogFile = new File(Main.launcherRootDir + File.separator + "keeperfx.log");
+        if (kfxLogFile.exists() && kfxLogFile.canRead()) {
+            try {
+                this.kfxLog = Files.readString(kfxLogFile.toPath());
+            } catch (Exception ex) {
+            }
+        }
+
+        // Setup this window
         this.setTitle("KeeperFX crash report");
         this.getContentPane().setBackground(new Color(50, 50, 50));
-        this.setSize(600, 750);
+        this.setSize(600, 550);
         this.setResizable(false);
         this.setModal(true);
         this.setLocationRelativeTo(this.mainWindow);
@@ -66,7 +93,7 @@ public class CrashReport extends JDialog {
 
         // Info text at top
         JLabel infoLabel = new JLabel(
-                "<html>It seems KeeperFX has crashed and is unable to recover. If you wish to submit technical details about this crash to the KeeperFX developers, you can describe your problem below and click 'Send'.</html>");
+                "<html>It seems like KeeperFX has crashed and is unable to recover. If you wish to submit technical details about this crash to the KeeperFX developers, you can describe your problem below and click 'Send'.</html>");
         infoLabel.setBorder(new EmptyBorder(20, 20, 10, 20));
         // infoLabel.setPreferredSize(new Dimension(600, 100));
         infoLabel.setPreferredSize(new Dimension(600, 60));
@@ -83,8 +110,6 @@ public class CrashReport extends JDialog {
         JLabel linkLabel1 = new JLabel(
                 "<html>You can also raise an issue on Github: </html>");
         JLabel linkLabel2 = GuiUtil.createLink("https://github.com/dkfans/keeperfx");
-
-        // .listen(e -> Main.openBrowserURL("https://github.com/dkfans/keeperfx"));
         githubPanel.add(linkLabel1);
         githubPanel.add(linkLabel2);
 
@@ -94,6 +119,15 @@ public class CrashReport extends JDialog {
         descriptionLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
         descriptionLabel.setPreferredSize(new Dimension(600, 30));
         panel.add(descriptionLabel);
+
+        // Add placeholder to description
+        TextPrompt descriptionPlaceholder = new TextPrompt(
+                "Please explain what happened, and if possible the steps to reproduce this crash.",
+                descriptionArea);
+        descriptionPlaceholder.setForeground(new Color(75, 75, 75));
+        System.out.println(descriptionPlaceholder.getAlignmentX());
+        descriptionPlaceholder.setAlignmentX(123);
+        descriptionPlaceholder.setAlignmentY(123);
 
         // Description
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
@@ -122,54 +156,13 @@ public class CrashReport extends JDialog {
         saveGameBox.setPreferredSize(new Dimension(560, 30));
         panel.add(saveGameBox);
 
-        // "Game output" label
-        JLabel gameOutputLabel = new JLabel(
-                "<html><h3>Game output log <span style='color:#666666;font-size: 10px; margin-left: 9px;'>(automatically gathered)</span></h3></html>");
-        gameOutputLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        gameOutputLabel.setPreferredSize(new Dimension(600, 30));
-        panel.add(gameOutputLabel);
-
-        // Game output
-        gameOutputArea.setEnabled(false);
-        gameOutputArea.setDisabledTextColor(new Color(100, 100, 100));
-        gameOutputArea.setText(gameConsoleOutput);
-        JScrollPane gameOutputScrollPane = new JScrollPane(gameOutputArea);
-        gameOutputScrollPane.setPreferredSize(new Dimension(560, 90));
-        gameOutputScrollPane.getVerticalScrollBar().setUI(new ThemeBasicScrollBarUI());
-        gameOutputScrollPane.getHorizontalScrollBar().setUI(new ThemeBasicScrollBarUI());
-        gameOutputScrollPane.setBorder(null);
-        panel.add(gameOutputScrollPane);
-
-        // "KeeperFX Log" label
-        JLabel kfxLogLabel = new JLabel(
-                "<html><h3>'keeperfx.log' contents <span style='color:#666666;font-size: 10px; margin-left: 9px;'>(automatically gathered)</span></h3></html>");
-        kfxLogLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        kfxLogLabel.setPreferredSize(new Dimension(600, 30));
-        panel.add(kfxLogLabel);
-
-        // KeeperFX Log
-        kfxLogArea.setEnabled(false);
-        kfxLogArea.setDisabledTextColor(new Color(100, 100, 100));
-        kfxLogArea.setText("Log not found or not readable");
-        JScrollPane kfxLogScrollPane = new JScrollPane(kfxLogArea);
-        kfxLogScrollPane.setPreferredSize(new Dimension(560, 90));
-        kfxLogScrollPane.getVerticalScrollBar().setUI(new ThemeBasicScrollBarUI());
-        kfxLogScrollPane.getHorizontalScrollBar().setUI(new ThemeBasicScrollBarUI());
-        kfxLogScrollPane.setBorder(null);
-        panel.add(kfxLogScrollPane);
-
-        ////////////////////////////////////////////////////////////////////////
-
-        // Load keeperfx.log into textarea
-        File kfxLogFile = new File(Main.launcherRootDir + File.separator + "keeperfx.log");
-        if (kfxLogFile.exists() && kfxLogFile.canRead()) {
-            try {
-                kfxLogArea.setText(
-                        Files.readString(kfxLogFile.toPath()));
-                kfxLogArea.setCaretPosition(0);
-            } catch (Exception ex) {
-            }
-        }
+        // Additional data information label
+        JLabel dataInfoLabel = new JLabel(
+                "<html>Additional data has been gathered and will be added to the report: 'keeperfx.log', game output, version</html>");
+        dataInfoLabel.setBorder(new EmptyBorder(30, 20, 20, 20));
+        dataInfoLabel.setPreferredSize(new Dimension(600, 50));
+        // dataInfoLabel.setForeground(new Color(100, 100, 100));
+        panel.add(dataInfoLabel);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -205,8 +198,14 @@ public class CrashReport extends JDialog {
         // Get data
         String description = this.descriptionArea.getText();
         SaveFile saveFile = (SaveFile) this.saveGameBox.getSelectedItem();
-        String gameOutput = this.gameOutputArea.getText();
-        String kfxLog = this.kfxLogArea.getText();
+
+        // Create JSONObject to post to server
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("description", description);
+        jsonObject.put("game_version", Main.kfxVersion);
+        jsonObject.put("game_log", this.kfxLog);
+        jsonObject.put("game_output", this.gameConsoleOutput);
+        jsonObject.put("source", "ImpLauncher " + Main.impLauncherVersion);
 
         // Add save file to report
         if (saveFile != null) {
@@ -223,19 +222,85 @@ public class CrashReport extends JDialog {
                         java.util.UUID.randomUUID().toString().substring(0, 8);
 
                 // Archive service
-                Archiver archiver = ArchiverFactory.createArchiver(ArchiveFormat.TAR,
-                        CompressionType.XZ);
+                Archiver archiver = ArchiverFactory.createArchiver(ArchiveFormat.SEVEN_Z);
 
                 // Create archive with save file
                 File archive = archiver.create(fileName, tempDir, saveFile.file);
+                System.out.println("Temporary save archive created:" + archive.getPath());
 
-                System.out.println("temporary save archive created:" + archive.getPath());
+                // Add to JSON
+                try (FileInputStream fileInputStream = new FileInputStream(archive)) {
+
+                    // Add data
+                    byte[] fileBytes = new byte[(int) archive.length()];
+                    fileInputStream.read(fileBytes);
+                    jsonObject.put("save_file_data", (String) Base64.getEncoder().encodeToString(fileBytes));
+
+                    // Add filename
+                    // Filename should come after data so if it fails the filename is not added.
+                    jsonObject.put("save_file_name", (String) saveFile.fileName + ".7z");
+                }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
 
-        System.out.println("NOT IMPLEMENTED YET!!!");
+        try {
+
+            // Send HTTP request
+            HttpClient client = HttpClient.newBuilder().build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(CrashReport.endPointURI))
+                    .POST(BodyPublishers.ofString(jsonObject.toJSONString()))
+                    .header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<?> response = client.send(request, BodyHandlers.ofString());
+            System.out.println("Crash Report HTTP request status code: " + response.statusCode());
+
+            // Convert to JSONObject
+            JSONParser parse = new JSONParser();
+            JSONObject data_obj = (JSONObject) parse.parse((String) response.body());
+
+            // Check if JSONObject is valid
+            if (data_obj != null) {
+
+                // Check for success
+                boolean success = (boolean) data_obj.get("success");
+                if (success) {
+
+                    // SUCCESS!
+                    System.out.println("Successfully submitted crash report!");
+
+                    // Show messagebox with ID and exit crash report panel
+                    String crashReportIdString = String.valueOf(data_obj.get("id"));
+                    JOptionPane.showMessageDialog(this,
+                            "Your crash report has been successfully submitted!\n\n" +
+                                    "The KeeperFX team can not guarantee immediate results, \n" +
+                                    "but your feedback is very helpful for the developers working on KeeperFX.\n\n" +
+                                    "Report ID: " + crashReportIdString,
+                            "Crash Report Submitted!",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                    return;
+
+                } else {
+
+                    // No success
+                    System.out.println("API crash-report endpoint error: " + data_obj.get("error"));
+                    System.out.println("Failed to submit crash report...!");
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        // Something went wrong
+        JOptionPane.showMessageDialog(this, "Failed to submit crash report.", "ImpLauncher Error",
+                JOptionPane.ERROR_MESSAGE);
+        this.dispose();
+        return;
     }
 }

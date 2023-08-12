@@ -149,9 +149,18 @@ public class Main extends JFrame {
         // "Play" button (Bottom, Right panel)
         this.playButton.setPreferredSize(new Dimension(150, 50));
         this.playButton.setEnabled(false); // Will be enabled after startup check
-        this.playButton.addActionListener(
-                e -> new Thread(() -> (new GameLauncher(this, Main.runOptions)).startGame()).start());
         panelRightBottom.add(this.playButton);
+
+        // Play behavior
+        this.playButton.addActionListener(
+                e -> new Thread(() -> (new GameLauncher(this,
+                        Main.runOptions)).startGame()).start());
+
+        // This can be used when working on the Crash report functionality:
+        // this.playButton.addActionListener(
+        // e -> (new Thread(() -> {
+        // new CrashReport(this, Main.impLauncherVersion);
+        // })).start());
 
         ////////////////////////////////////////////////////////////////////////////////
 
