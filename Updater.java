@@ -4,12 +4,17 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -237,6 +242,60 @@ public class Updater {
         // "Update" button
         updateButton.setPreferredSize(new Dimension(150, 50));
         updateButton.addActionListener(e -> {
+
+            // Vars for checking if file is locked
+            boolean keeperFxFileLocked = false;
+            File keeperFxFile = new File(Main.launcherRootDir + File.separator + "keeperfx.exe");
+            FileChannel channel = null;
+            FileLock lock = null;
+            RandomAccessFile randAccFile = null;
+
+            // The following trick works for Windows and checks if the file is locked
+            if (!keeperFxFile.renameTo(keeperFxFile)) {
+                keeperFxFileLocked = true;
+            } else {
+
+                // Get file channel
+                try {
+                    randAccFile = new RandomAccessFile(keeperFxFile, "rw");
+                    channel = randAccFile.getChannel();
+                } catch (FileNotFoundException ex) {
+                    return;
+                }
+
+                // Try to get lock on file
+                try {
+                    lock = channel.tryLock();
+                } catch (Exception ex) {
+                    keeperFxFileLocked = true;
+                }
+
+                // Release lock and close streams
+                try {
+                    if (lock != null) {
+                        lock.release();
+                    }
+                    if (channel != null) {
+                        channel.close();
+                    }
+                    if (randAccFile != null) {
+                        randAccFile.close();
+                    }
+                } catch (Exception ex) {
+                    return;
+                }
+            }
+
+            // Show message and do not update when 'keeperfx.exe' is locked.
+            if (keeperFxFileLocked) {
+                JOptionPane.showMessageDialog(this.mainWindow,
+                        "The 'keeperfx.exe' executable seems to be locked.\nThis mostly means that your game is running.\nPlease exit your game and try again.",
+                        "Updater failure",
+                        JOptionPane.ERROR_MESSAGE);
+
+                return;
+            }
+
             this.updateThread = this.createUpdateThread();
             this.updateThread.start();
         });
