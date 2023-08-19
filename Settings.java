@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.metal.MetalButtonUI;
 
 import Settings.*;
@@ -333,12 +335,29 @@ public class Settings extends JDialog {
 
         if (component instanceof JComboBox) {
             ((JComboBox<String>) component).addActionListener(e -> this.saveButton.setVisible(true));
-        }
-        if (component instanceof JCheckBox) {
+        } else if (component instanceof JCheckBox) {
             ((JCheckBox) component).addActionListener(e -> this.saveButton.setVisible(true));
-        }
-        if (component instanceof JTextField) {
-            ((JTextField) component).addActionListener(e -> this.saveButton.setVisible(true));
+        } else if (component instanceof JTextField) {
+            ((JTextField) component).getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    // Handle text insertion (field change)
+                    saveButton.setVisible(true);
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    // Handle text removal (field change)
+                    saveButton.setVisible(true);
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    // Handle attribute changes (not relevant for plain text)
+                }
+            });
+        } else {
+            System.out.print(component);
         }
 
         return optionPanel;
