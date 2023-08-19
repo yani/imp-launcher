@@ -35,6 +35,7 @@ public class Main extends JFrame {
     public JButton logFileButton = GuiUtil.createDefaultButton("Log");
 
     public static JLabel versionLabel;
+    public static JLabel mpLobbyCountLabel;
 
     public static void main(String[] args) {
 
@@ -128,6 +129,13 @@ public class Main extends JFrame {
         logFileButton.addActionListener(e -> this.openLogFile());
         logFileButton.setEnabled(false);
         panelRightTop.add(logFileButton, BorderLayout.PAGE_START);
+
+        // Multiplayer lobby count
+        Main.mpLobbyCountLabel = new JLabel("");
+        Main.mpLobbyCountLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
+        Main.mpLobbyCountLabel.setPreferredSize(new Dimension(150, 20));
+        Main.mpLobbyCountLabel.setForeground(Color.GRAY);
+        panelRightTop.add(Main.mpLobbyCountLabel, BorderLayout.CENTER);
 
         ////////////////////////////////////////////////////////////////////////////////
 
@@ -326,6 +334,36 @@ public class Main extends JFrame {
 
         // Show version in GUI
         Main.updateDisplayVersion();
+
+        // Show live count of multiplayer lobbies
+        new Thread(() -> {
+            while (true) {
+                try {
+                    // Get the masterserver host
+                    String masterServerHost = (String) Main.keeperFxCfg.get("MASTERSERVER_HOST");
+                    if (masterServerHost.isEmpty()) {
+                        continue;
+                    }
+
+                    // Get the lobby count
+                    int count = Masterserver.getLobbyCount(masterServerHost);
+                    if (count == -1 || count == 0) {
+                        Main.mpLobbyCountLabel.setText("");
+                    } else if (count == 1) {
+                        Main.mpLobbyCountLabel.setText(
+                                "<html><span style='color: white;'>" + count + "</span> open MP lobby!</html>");
+                    } else {
+                        Main.mpLobbyCountLabel.setText(
+                                "<html><span style='color: white;'>" + count + "</span> open MP lobbies!</html>");
+                    }
+
+                    // Sleep 10 seconds
+                    Thread.sleep(10000);
+                } catch (Exception ex) {
+                }
+            }
+
+        }).start();
     }
 
     public void enablePlayButton() {
