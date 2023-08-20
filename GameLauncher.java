@@ -1,3 +1,4 @@
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,10 @@ public class GameLauncher {
     };
 
     public void startGame() {
+        this.startGame(null);
+    }
+
+    public void startGame(ArrayList<String> extraArguments) {
 
         int exitCode = -1;
         String gameConsoleOutput = "";
@@ -67,6 +72,11 @@ public class GameLauncher {
                 if (value instanceof String || value instanceof Integer) {
                     arguments.add((String) value);
                 }
+            }
+
+            // Add extra arguments
+            if (extraArguments != null) {
+                arguments.addAll(extraArguments);
             }
 
             // Create a process builder

@@ -33,6 +33,7 @@ public class Main extends JFrame {
     public JButton playButton = GuiUtil.createDefaultButton("Play");
     public JButton installButton = GuiUtil.createDefaultButton("Install");
     public JButton logFileButton = GuiUtil.createDefaultButton("Log");
+    public JButton directConnectButton = GuiUtil.createDefaultButton("Direct Connect");
 
     public static JLabel versionLabel;
     public static JLabel mpLobbyCountLabel;
@@ -129,6 +130,13 @@ public class Main extends JFrame {
         logFileButton.addActionListener(e -> this.openLogFile());
         logFileButton.setEnabled(false);
         panelRightTop.add(logFileButton, BorderLayout.PAGE_START);
+
+        // "Direct Connect" button (Top, Right panel)
+        this.directConnectButton.setPreferredSize(new Dimension(150, 50));
+        this.directConnectButton.addActionListener(e -> this.openLogFile());
+        this.directConnectButton.setEnabled(false);
+        this.directConnectButton.addActionListener(e -> new DirectConnect(this));
+        panelRightTop.add(this.directConnectButton, BorderLayout.PAGE_START);
 
         // Multiplayer lobby count
         Main.mpLobbyCountLabel = new JLabel("");
@@ -373,6 +381,9 @@ public class Main extends JFrame {
         // this.playButton.setBorderPainted(true);
         this.playButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(31, 153, 205)));
         this.playButton.setEnabled(true);
+
+        // Also enable Direct Connect
+        this.directConnectButton.setEnabled(true);
     }
 
     public void setPlayButtonAsPlaying() {
@@ -380,6 +391,9 @@ public class Main extends JFrame {
         this.playButton.setBackground(new Color(30, 30, 30));
         this.playButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(180, 180, 180)));
         this.playButton.setEnabled(false);
+
+        // Also disable Direct Connect
+        this.directConnectButton.setEnabled(false);
     }
 
     public void handleLogFileButton() {
