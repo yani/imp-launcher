@@ -329,7 +329,7 @@ public class Updater {
 
             // Load the .cfg file
             File cfgFile = new File(tempDir + File.separator + fileSubPath);
-            Properties cfgProperties = new Properties();
+            CfgProperties cfgProperties = new CfgProperties();
             cfgProperties.load(new FileInputStream(cfgFile.getPath().toString()));
 
             // Loop trough all cfg properties for the updated config file
@@ -358,8 +358,7 @@ public class Updater {
 
             // Save new .cfg file
             if (cfgHasUpdated == true) {
-                Main.keeperFxCfg.store(new FileWriter(Main.launcherRootDir + File.separator + "keeperfx.cfg"),
-                        "ImpLauncher generated 'keeperfx.cfg' file");
+                Main.keeperFxCfg.update(new File(Main.launcherRootDir + File.separator + "keeperfx.cfg"));
                 cfgHasUpdated = false;
                 System.out.println(".cfg file updated!");
             }

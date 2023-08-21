@@ -304,8 +304,7 @@ public class Settings extends JDialog {
 
         // Save .cfg file
         try {
-            Main.keeperFxCfg.store(new FileWriter(Main.launcherRootDir + File.separator + "keeperfx.cfg"),
-                    "ImpLauncher generated 'keeperfx.cfg' file");
+            Main.keeperFxCfg.update(new File(Main.launcherRootDir + File.separator + "keeperfx.cfg"));
         } catch (Exception ex) {
         }
 

@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class Main extends JFrame {
     public static KfxReleaseType kfxReleaseType;
     public static String kfxVersion;
 
-    public static Properties keeperFxCfg;
+    public static CfgProperties keeperFxCfg;
 
     public static RunOptions runOptions;
 
@@ -296,8 +295,8 @@ public class Main extends JFrame {
 
         // Load CFG
         try {
-            this.keeperFxCfg = new Properties();
-            this.keeperFxCfg.load(new FileInputStream(keeperFxCfg.getPath().toString()));
+            Main.keeperFxCfg = new CfgProperties();
+            Main.keeperFxCfg.load(new FileInputStream(keeperFxCfg.getPath().toString()));
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed read 'keeperfx.cfg'",
