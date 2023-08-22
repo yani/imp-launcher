@@ -21,7 +21,7 @@ public class DirectConnect extends JDialog {
         this.setResizable(false);
         this.setModal(true);
         this.setLocationRelativeTo(this.mainWindow);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         ////////////////////////////////////////////////////////////////////////
 

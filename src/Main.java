@@ -126,10 +126,10 @@ public class Main extends JFrame {
         panelRightTop.add(this.installButton, BorderLayout.PAGE_START);
 
         // "Log" button (Top, Right panel)
-        logFileButton.setPreferredSize(new Dimension(150, 50));
-        logFileButton.addActionListener(e -> this.openLogFile());
-        logFileButton.setEnabled(false);
-        panelRightTop.add(logFileButton, BorderLayout.PAGE_START);
+        this.logFileButton.setPreferredSize(new Dimension(150, 50));
+        this.logFileButton.addActionListener(e -> this.openLogFile());
+        this.logFileButton.setEnabled(false);
+        panelRightTop.add(this.logFileButton, BorderLayout.PAGE_START);
 
         // "Direct Connect" button (Top, Right panel)
         this.directConnectButton.setPreferredSize(new Dimension(150, 50));
