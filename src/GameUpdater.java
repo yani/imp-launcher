@@ -33,7 +33,7 @@ import org.rauschig.jarchivelib.ArchiveStream;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 
-public class Updater {
+public class GameUpdater {
 
     JFrame mainWindow;
     JDialog dialog = new JDialog();
@@ -52,7 +52,7 @@ public class Updater {
     JProgressBar progressBar = new JProgressBar(0, 100);
     JLabel statusLabel = new JLabel("<html>Status: Ready</html>");
 
-    public Updater(JFrame mainWindow) {
+    public GameUpdater(JFrame mainWindow) {
         this.mainWindow = mainWindow;
     }
 
@@ -348,7 +348,7 @@ public class Updater {
                 if (currentValue == null) {
                     System.out.println("New .cfg property found: " + key);
                     Main.keeperFxCfg.setProperty(key, cfgProperties.getProperty(key));
-                    Updater.cfgHasUpdated = true;
+                    GameUpdater.cfgHasUpdated = true;
                 }
 
             });

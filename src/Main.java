@@ -333,7 +333,7 @@ public class Main extends JFrame {
         // Handle possible updates
         // Only when release is STABLE or ALPHA
         if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-            Updater updater = new Updater(this);
+            GameUpdater updater = new GameUpdater(this);
             updater.checkForUpdates();
         }
 
