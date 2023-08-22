@@ -1,10 +1,10 @@
 <launch4jConfig>
     <headerType>gui</headerType>
-    <outfile>./output/implauncher.exe</outfile>
+    <outfile>output/implauncher.exe</outfile>
     <jar>implauncher.jar</jar>
     <dontWrapJar>true</dontWrapJar>
     <downloadUrl>http://adoptium.net/download</downloadUrl>
-    <icon>./implauncher-data/imp-portrait.ico</icon>
+    <icon>implauncher-data/imp-portrait.ico</icon>
     <jre>
         <path>%JAVA_HOME%;%PATH%</path>
         <minVersion>1.8.0</minVersion>

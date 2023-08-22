@@ -10,6 +10,13 @@
             "request": "launch",
             "mainClass": "src.Main",
             "projectName": "imp-launcher_3194846"
+        },
+        {
+            "type": "java",
+            "name": "Updater",
+            "request": "launch",
+            "mainClass": "updater.Main",
+            "projectName": "imp-launcher_3194846"
         }
     ]
 }

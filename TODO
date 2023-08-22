@@ -1,12 +1,9 @@
 
 - needs a LOT more errors when we fail to update/download something. so the user knows this
 
+- fix CANCEL BUTTON during update (especially Stable release updates)
+
 - add category to workshop item
-
-- show total amount of online public MP lobbies
-
-- [MP Connect] 
-    - uses -join <ip>:<port>
 
 - On Install:
     - Do you want to use ImpLauncher's recommended settings?

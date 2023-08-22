@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -32,6 +33,8 @@ import org.rauschig.jarchivelib.ArchiverFactory;
 
 public class SelfUpdater {
 
+    public static String endPointHost = "keeperfx.net";
+
     public static int workshopID = 410;
 
     JFrame mainWindow;
@@ -48,8 +51,6 @@ public class SelfUpdater {
     JButton cancelButton = GuiUtil.createDefaultButton("Cancel");
     JProgressBar progressBar = new JProgressBar(0, 100);
     JLabel statusLabel = new JLabel("<html>Status: Ready</html>");
-
-    File theJarFile;
 
     public SelfUpdater(JFrame mainWindow) {
         this.mainWindow = mainWindow;
@@ -71,24 +72,19 @@ public class SelfUpdater {
             String classJarExtension = classJarPath.substring(classJarPath.lastIndexOf(".") + 1).toLowerCase();
 
             if (classJarExtension.equals("jar")) {
-
-                String classJarFilename = classJarPath.substring(classJarPath.lastIndexOf("/") + 1);
-                this.theJarFile = new File(Main.launcherRootDir + File.separator + classJarFilename);
-
-                new Thread(() -> this.updateCheckThread()).start();
-
+                this.updateCheck();
             } else {
                 System.out.println("Can't update ImpLauncher if we are not executing from a .jar");
             }
-
         }
     }
 
-    public void updateCheckThread() {
+    public void updateCheck() {
 
         JSONObject json = HttpUtil
                 .getJsonObjectFromRestAPI(
-                        URI.create("https://keeperfx.net/api/v1/workshop/item/" + SelfUpdater.workshopID));
+                        URI.create("https://" + SelfUpdater.endPointHost + "/api/v1/workshop/item/"
+                                + SelfUpdater.workshopID));
 
         if (json == null) {
             return;
@@ -255,6 +251,26 @@ public class SelfUpdater {
             // Start update
             try {
 
+                // Extract updater tool
+                this.updateStatusLabel("Extracting updater tool...");
+                try {
+                    InputStream inputStream = Main.class.getResourceAsStream("/self-updater/implauncher-updater.jar");
+                    OutputStream outputStream = new FileOutputStream(
+                            Main.launcherRootDir + File.separator + "implauncher-updater.jar");
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.close();
+                    inputStream.close();
+                } catch (Exception ex) {
+                    System.out.println("Failed to extract updater tool!");
+                    this.updateStatusLabel("Failed to extract updater tool!");
+                    return;
+                }
+
+                // Start download
                 this.updateStatusLabel("Checking for download...");
 
                 // Create HttpClient
@@ -342,15 +358,15 @@ public class SelfUpdater {
                 }
 
                 // Download complete!
-                System.out.println("File downloaded successfully!");
-                this.updateStatusLabel("Download complete! Replacing original .jar file...");
+                System.out.println("File downloaded successfully! Moving to implauncher dir...");
+                this.updateStatusLabel("Download complete! Moving to implauncher dir...");
                 progressBar.setValue(0);
 
-                // Replace .jar file
-                this.theJarFile.delete();
-                File tempFile = new File(tempFilePath.toString());
-                tempFile.renameTo(this.theJarFile);
-                this.theJarFile.setExecutable(true);
+                // Move temp file to root app dir
+                File tempNewAppJar = new File(tempFilePath.toString());
+                File newAppJar = new File(Main.launcherRootDir + File.separator + "implauncher-new.jar");
+                tempNewAppJar.renameTo(newAppJar);
+                newAppJar.setExecutable(true);
 
                 // Show complete!
                 System.out.println("Complete!");
@@ -394,33 +410,32 @@ public class SelfUpdater {
 
             // Show complete notice and close dialog
             JOptionPane.showMessageDialog(this.mainWindow,
-                    "Success!\n" +
-                            "ImpLauncher has been updated to: " + this.newVersion
+                    "ImpLauncher needs to restart to complete the update process."
                             + "\n\nClick OK to restart the application.",
-                    "ImpLauncher update completed!",
+                    "ImpLauncher updater",
                     JOptionPane.INFORMATION_MESSAGE);
-            this.dialog.dispose();
 
-            // Restart ImpLauncher
-            this.restartApplication();
+            // Get java bin path
+            final String javaBin = System.getProperty("java.home") + File.separator +
+                    "bin" + File.separator + "java";
+
+            // Create .jar start command
+            final ArrayList<String> command = new ArrayList<String>();
+            command.add(javaBin);
+            command.add("-jar");
+            command.add(Main.launcherRootDir + File.separator + "implauncher-updater.jar");
+            command.add(Main.launcherRootDir); // Pass the app root-dir so this logic does not have to be copied
+
+            // Start updater
+            try {
+                final ProcessBuilder builder = new ProcessBuilder(command);
+                builder.start();
+            } catch (IOException ex) {
+            }
+
+            // Stop self
+            this.dialog.dispose();
+            System.exit(0);
         });
     }
-
-    public void restartApplication() {
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-
-        /* Build command: java -jar application.jar */
-        final ArrayList<String> command = new ArrayList<String>();
-        command.add(javaBin);
-        command.add("-jar");
-        command.add(this.theJarFile.getPath());
-
-        try {
-            final ProcessBuilder builder = new ProcessBuilder(command);
-            builder.start();
-        } catch (IOException ex) {
-        }
-        System.exit(0);
-    }
-
 }

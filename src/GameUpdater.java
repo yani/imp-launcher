@@ -74,11 +74,11 @@ public class GameUpdater {
         System.out.println("Current KFX version: " + this.currentSemver);
 
         if (Main.kfxReleaseType == KfxReleaseType.STABLE) {
-            new Thread(() -> this.checkStable()).start();
+            this.checkStable();
         }
 
         if (Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-            new Thread(() -> this.checkAlpha()).start();
+            this.checkAlpha();
         }
 
     }

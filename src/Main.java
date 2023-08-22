@@ -326,16 +326,38 @@ public class Main extends JFrame {
             Main.kfxReleaseType = KfxReleaseType.STABLE;
         }
 
-        // Handle possible self-update
-        SelfUpdater selfUpdater = new SelfUpdater(this);
-        selfUpdater.checkForUpdates();
+        // Update thread
+        new Thread(() -> {
+            try {
 
-        // Handle possible updates
-        // Only when release is STABLE or ALPHA
-        if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-            GameUpdater updater = new GameUpdater(this);
-            updater.checkForUpdates();
-        }
+                // Check for active update process
+                File tempUpdaterToolJar = new File(Main.launcherRootDir + File.separator + "implauncher-updater.jar");
+                if (tempUpdaterToolJar.exists()) {
+
+                    // Remove the temporary updater tool if it is present (after a second)
+                    // This means that we were updating and we can now tell the user!
+                    Thread.sleep(1000);
+                    if (tempUpdaterToolJar.delete()) {
+                        JOptionPane.showMessageDialog(this,
+                                "ImpLauncher has been updated to version " + impLauncherVersion + "!",
+                                "ImpLauncher Updater", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+
+                // Handle possible self-update
+                SelfUpdater selfUpdater = new SelfUpdater(this);
+                selfUpdater.checkForUpdates();
+
+                // Handle possible updates
+                // Only when release is STABLE or ALPHA
+                if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
+                    GameUpdater updater = new GameUpdater(this);
+                    updater.checkForUpdates();
+                }
+
+            } catch (Exception ex) {
+            }
+        }).start();
 
         // Check if we must enable Log file button
         this.handleLogFileButton();
