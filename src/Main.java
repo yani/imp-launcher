@@ -133,7 +133,6 @@ public class Main extends JFrame {
 
         // "Direct Connect" button (Top, Right panel)
         this.directConnectButton.setPreferredSize(new Dimension(150, 50));
-        this.directConnectButton.addActionListener(e -> this.openLogFile());
         this.directConnectButton.setEnabled(false);
         this.directConnectButton.addActionListener(e -> new DirectConnect(this));
         panelRightTop.add(this.directConnectButton, BorderLayout.PAGE_START);
