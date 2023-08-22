@@ -36,6 +36,8 @@ public class Main {
             // Variables
             File originalJar = new File(rootDir + File.separator + "implauncher.jar");
             File newJar = new File(rootDir + File.separator + "implauncher-new.jar");
+            File originalExe = new File(rootDir + File.separator + "implauncher.exe");
+            File newExe = new File(rootDir + File.separator + "implauncher-new.exe");
 
             // Make sure the new jar file exists
             if (!newJar.exists()) {
@@ -47,7 +49,7 @@ public class Main {
                 System.exit(1);
             }
 
-            // Remove the original jar
+            // Remove the original .jar
             if (originalJar.exists()) {
                 if (!originalJar.delete()) {
                     JOptionPane.showMessageDialog(null,
@@ -59,14 +61,39 @@ public class Main {
                 }
             }
 
-            // Rename new jar to original jar
+            // Rename new .jar to original .jar
             if (!newJar.renameTo(originalJar)) {
                 JOptionPane.showMessageDialog(null,
                         "Something went wrong with the update..." +
-                                "\nFailed to rename the new file as the original file.",
+                                "\nFailed to rename the new .jar to the original .jar.",
                         "ImpLauncher Updater",
                         JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
+            }
+
+            // Make sure it's executable
+            newJar.setExecutable(true);
+
+            // Update the .exe wrapper
+            if (originalExe.exists() && newExe.exists()) {
+                if (!originalExe.delete()) {
+                    JOptionPane.showMessageDialog(null,
+                            "Something went wrong with the update..." +
+                                    "\nFailed to delete the original .exe",
+                            "ImpLauncher Updater",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
+                }
+
+                if (!newExe.renameTo(originalExe)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Something went wrong with the update..." +
+                                    "\nFailed to rename the new .exe to the original .exe.",
+                            "ImpLauncher Updater",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
+                }
+
             }
 
             // Get java bin path

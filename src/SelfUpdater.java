@@ -34,8 +34,10 @@ import org.rauschig.jarchivelib.ArchiverFactory;
 public class SelfUpdater {
 
     public static String endPointHost = "keeperfx.net";
-
     public static int workshopID = 410;
+
+    // public static String endPointHost = "keeperfx.local";
+    // public static int workshopID = 37;
 
     JFrame mainWindow;
 
@@ -60,18 +62,21 @@ public class SelfUpdater {
 
         System.out.println("Current ImpLauncher version: " + Main.impLauncherVersion);
 
-        URL classJarLocation = this.mainWindow.getClass().getProtectionDomain().getCodeSource().getLocation();
+        // Get the location of the code source
+        URL codeSourceLocation = this.mainWindow.getClass().getProtectionDomain().getCodeSource().getLocation();
+        if (codeSourceLocation != null) {
 
-        System.out.println(classJarLocation);
+            String codeSourceLocationString = codeSourceLocation.toString();
+            System.out.println(codeSourceLocationString);
 
-        if (classJarLocation != null) {
-
-            String classJarPath = classJarLocation.toString();
-            System.out.println(classJarPath);
-
-            String classJarExtension = classJarPath.substring(classJarPath.lastIndexOf(".") + 1).toLowerCase();
-
+            // Check if code source ends with 'jar'
+            // This would mean we are running from a .jar and we can update ourselves
+            // (production)
+            String classJarExtension = codeSourceLocationString.substring(codeSourceLocationString.lastIndexOf(".") + 1)
+                    .toLowerCase();
+            System.out.println("Extension='" + classJarExtension + "'");
             if (classJarExtension.equals("jar")) {
+                // Check for a new update
                 this.updateCheck();
             } else {
                 System.out.println("Can't update ImpLauncher if we are not executing from a .jar");
@@ -81,31 +86,43 @@ public class SelfUpdater {
 
     public void updateCheck() {
 
+        System.out.println("Checking for ImpLauncher update");
+
+        // Get JSON data from KeeperFX.net for the workshop item for ImpLauncher
         JSONObject json = HttpUtil
                 .getJsonObjectFromRestAPI(
                         URI.create("https://" + SelfUpdater.endPointHost + "/api/v1/workshop/item/"
                                 + SelfUpdater.workshopID));
-
         if (json == null) {
+            System.out.println("Invalid API response (no JSON object) during ImpLauncher update check");
             return;
         }
 
+        // Get variables
         JSONObject workshopItem = (JSONObject) json.get("workshop_item");
         JSONArray files = (JSONArray) workshopItem.get("files");
+
+        // Make sure there is a file returned
+        if (files.size() == 0) {
+            System.out.println("No files for this workshop item found");
+            return;
+        }
+
+        // Get latest file and its filename
         JSONObject latestFile = (JSONObject) files.get(0);
-
         String latestImplauncherFilename = (String) latestFile.get("filename");
+        System.out.println("Latest ImpLauncher workshop filename:" + latestImplauncherFilename);
 
+        // Try and get the version from the filename
         Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*");
-
         String newVersion = null;
-
         Matcher m = pattern.matcher(latestImplauncherFilename);
         if (m.matches()) {
             // newVersion = m.group(1) + "-unique";
             newVersion = m.group(1);
         }
 
+        // Check if we can determine version from filename
         if (newVersion == null) {
             System.out.println("Unable to determine semver for online ImpLauncher version");
             return;
@@ -113,6 +130,11 @@ public class SelfUpdater {
 
         System.out.println("Latest ImpLauncher version on KFX workshop: " + newVersion);
 
+        // If version differs from this ImpLauncher version, we'll ask to update
+        // This will also update version that are not available on KeeperFX.net to the
+        // lower version,
+        // but this can only really happen during development or prototyping.
+        // If required this check can just be replaced with a decent Semver check.
         if (newVersion.equals(Main.impLauncherVersion) == false) {
             System.out.println("ImpLauncher version does not match. Asking user to update..");
             this.showSelfUpdaterUI(newVersion, (String) latestFile.get("url"));
@@ -229,6 +251,13 @@ public class SelfUpdater {
     }
 
     private void updateStatusLabel(String text) {
+        this.updateStatusLabel(text, true);
+    }
+
+    private void updateStatusLabel(String text, boolean printConsole) {
+        if (printConsole != false) {
+            System.out.println(text);
+        }
         statusLabel.setText("<html>Status: " + text + "</html>");
     }
 
@@ -236,7 +265,7 @@ public class SelfUpdater {
 
         return new Thread(() -> {
 
-            Path tempFilePath;
+            Path tempFilePath = null;
 
             // Update buttons
             updateButton.setText("Updating...");
@@ -250,25 +279,6 @@ public class SelfUpdater {
 
             // Start update
             try {
-
-                // Extract updater tool
-                this.updateStatusLabel("Extracting updater tool...");
-                try {
-                    InputStream inputStream = Main.class.getResourceAsStream("/self-updater/implauncher-updater.jar");
-                    OutputStream outputStream = new FileOutputStream(
-                            Main.launcherRootDir + File.separator + "implauncher-updater.jar");
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                    outputStream.close();
-                    inputStream.close();
-                } catch (Exception ex) {
-                    System.out.println("Failed to extract updater tool!");
-                    this.updateStatusLabel("Failed to extract updater tool!");
-                    return;
-                }
 
                 // Start download
                 this.updateStatusLabel("Checking for download...");
@@ -307,7 +317,6 @@ public class SelfUpdater {
 
                 // Show the user we are starting
                 // progressBar.setValue(1);
-                System.out.println("Size: " + fileSizeInKB + "MB");
                 this.updateStatusLabel("Starting download... (" + fileSizeInKB + "KB)");
 
                 // Create a temporary file to save the downloaded content
@@ -349,7 +358,7 @@ public class SelfUpdater {
                         totalBytesRead += bytesRead;
                         totalKBDownloaded = ((int) totalBytesRead) / 1000;
                         this.updateStatusLabel(
-                                "Downloading... (" + totalKBDownloaded + "KB / " + fileSizeInKB + "KB)");
+                                "Downloading... (" + totalKBDownloaded + "KB / " + fileSizeInKB + "KB)", false);
                         progressBar.setValue(
                                 (int) ((totalBytesRead / fileSize) * 100));
                         progressBar.revalidate();
@@ -358,23 +367,166 @@ public class SelfUpdater {
                 }
 
                 // Download complete!
-                System.out.println("File downloaded successfully! Moving to implauncher dir...");
-                this.updateStatusLabel("Download complete! Moving to implauncher dir...");
+                this.updateStatusLabel("Download complete!");
                 progressBar.setValue(0);
 
-                // Move temp file to root app dir
-                File tempNewAppJar = new File(tempFilePath.toString());
-                File newAppJar = new File(Main.launcherRootDir + File.separator + "implauncher-new.jar");
-                tempNewAppJar.renameTo(newAppJar);
-                newAppJar.setExecutable(true);
+                // Get temp downloaded file and its extension
+                File tempFile = new File(tempFilePath.toString());
+                String tempFileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+                // If the download is a .jar file we'll simply move it to the root app dir.
+                // This will probably not be used much in the future
+                if (tempFileExtension.equals("jar")) {
+                    this.updateStatusLabel("Moving downloaded file to KeeperFX directory...");
+
+                    File newAppJar = new File(Main.launcherRootDir + File.separator + "implauncher-new.jar");
+                    tempFile.renameTo(newAppJar);
+
+                    newAppJar.setExecutable(true);
+                } else if (tempFileExtension.equals("zip")) {
+
+                    this.updateStatusLabel("Extracting files from downloaded archive...");
+
+                    // Create a temporary directory to hold the extracted files
+                    Path tempDirPath = Files.createTempDirectory("implauncher-update");
+                    String tempDirString = tempDirPath.toString();
+                    File tempDir = new File(tempDirString);
+
+                    // Create archive stream to extract the file
+                    Archiver archiver = ArchiverFactory.createArchiver(tempFile);
+                    ArchiveEntry entry;
+                    ArchiveStream stream = archiver.stream(tempFile);
+
+                    // Loop trough the files in the archive
+                    while ((entry = stream.getNextEntry()) != null) {
+
+                        // Ignore any directories
+                        if (entry.isDirectory()) {
+                            continue;
+                        }
+
+                        // We only need the following files
+                        if (entry.getName().equals("implauncher.jar") == false &&
+                                entry.getName().equals("implauncher.exe") == false) {
+                            continue;
+                        }
+
+                        // Extract current file
+                        entry.extract(tempDir);
+                    }
+
+                    // .jar variables
+                    File jarFile = new File(tempDirString + File.separator + "implauncher.jar");
+                    File newJarFile = new File(Main.launcherRootDir + File.separator + "implauncher-new.jar");
+
+                    // Remove any possible queued update
+                    if (newJarFile.exists()) {
+                        newJarFile.delete();
+                    }
+
+                    // Make sure .jar exists and is moved
+                    if (!jarFile.exists()) {
+                        this.updateStatusLabel("Invalid download! ('implauncher.jar' not found in archive)");
+                        return;
+                    }
+
+                    // Move .jar file
+                    if (!jarFile.renameTo(newJarFile)) {
+                        this.updateStatusLabel("Update failed! (Failed to move .jar to root directory.)");
+                        return;
+                    }
+
+                    // .exe variables
+                    File exeFile = new File(tempDirString + File.separator + "implauncher.exe");
+                    File newExeFile = new File(Main.launcherRootDir + File.separator + "implauncher-new.exe");
+
+                    // Remove any possible queued update
+                    if (newExeFile.exists()) {
+                        newExeFile.delete();
+                    }
+
+                    // Move a possible existing .exe file
+                    if (exeFile.exists()) {
+                        if (!exeFile.renameTo(newExeFile)) {
+                            this.updateStatusLabel("Update failed! (Failed to move .exe to root directory.)");
+                            return;
+                        }
+                    }
+
+                    // Show complete!
+                    this.updateStatusLabel("Archive successfully extracted!");
+
+                    // Remove temporary directory
+                    Files.delete(tempDirPath);
+
+                } else {
+                    this.updateStatusLabel("Invalid download. (Invalid file extension)");
+                    return;
+                }
+
+                // Extract updater tool
+                this.updateStatusLabel("Extracting updater tool...");
+                try {
+                    InputStream updaterInputStream = Main.class
+                            .getResourceAsStream("/self-updater/implauncher-updater.jar");
+                    OutputStream updaterOutputStream = new FileOutputStream(
+                            Main.launcherRootDir + File.separator + "implauncher-updater.jar");
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = updaterInputStream.read(buffer)) != -1) {
+                        updaterOutputStream.write(buffer, 0, bytesRead);
+                    }
+                    updaterOutputStream.close();
+                    updaterInputStream.close();
+                } catch (Exception ex) {
+                    System.out.println("Failed to extract updater tool!");
+                    this.updateStatusLabel("Failed to extract updater tool!");
+                    return;
+                }
 
                 // Show complete!
-                System.out.println("Complete!");
                 this.updateStatusLabel("Complete!");
+
+                // Show complete notice and close dialog
+                JOptionPane.showMessageDialog(this.mainWindow,
+                        "ImpLauncher needs to restart to complete the update process."
+                                + "\n\nClick OK to restart the application.",
+                        "ImpLauncher updater",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                // Get java bin path
+                final String javaBin = System.getProperty("java.home") + File.separator +
+                        "bin" + File.separator + "java";
+
+                // Create .jar start command
+                final ArrayList<String> command = new ArrayList<String>();
+                command.add(javaBin);
+                command.add("-jar");
+                command.add(Main.launcherRootDir + File.separator + "implauncher-updater.jar");
+                command.add(Main.launcherRootDir); // Pass the app root-dir so this logic does not have to be copied
+
+                // Start updater
+                try {
+                    final ProcessBuilder builder = new ProcessBuilder(command);
+                    builder.start();
+                } catch (IOException ex) {
+                }
+
+                // Stop self
+                this.dialog.dispose();
+                System.exit(0);
 
             } catch (InterruptedException ex) {
 
                 this.updateStatusLabel("Canceled");
+
+                // Clear temporary downloaded file
+                if (tempFilePath != null) {
+                    File tempFile = new File(tempFilePath.toString());
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                }
 
                 // Reset buttons
                 updateButton.setText("Update");
@@ -390,6 +542,14 @@ public class SelfUpdater {
 
                 this.updateStatusLabel("Update failed...");
 
+                // Clear temporary downloaded file
+                if (tempFilePath != null) {
+                    File tempFile = new File(tempFilePath.toString());
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                }
+
                 // Reset buttons
                 updateButton.setText("Update");
                 updateButton.setEnabled(true);
@@ -399,43 +559,6 @@ public class SelfUpdater {
                 // Cancel update process
                 return;
             }
-
-            // Clear temporary downloaded file
-            if (tempFilePath != null) {
-                File tempFile = new File(tempFilePath.toString());
-                if (tempFile.exists()) {
-                    tempFile.delete();
-                }
-            }
-
-            // Show complete notice and close dialog
-            JOptionPane.showMessageDialog(this.mainWindow,
-                    "ImpLauncher needs to restart to complete the update process."
-                            + "\n\nClick OK to restart the application.",
-                    "ImpLauncher updater",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            // Get java bin path
-            final String javaBin = System.getProperty("java.home") + File.separator +
-                    "bin" + File.separator + "java";
-
-            // Create .jar start command
-            final ArrayList<String> command = new ArrayList<String>();
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(Main.launcherRootDir + File.separator + "implauncher-updater.jar");
-            command.add(Main.launcherRootDir); // Pass the app root-dir so this logic does not have to be copied
-
-            // Start updater
-            try {
-                final ProcessBuilder builder = new ProcessBuilder(command);
-                builder.start();
-            } catch (IOException ex) {
-            }
-
-            // Stop self
-            this.dialog.dispose();
-            System.exit(0);
         });
     }
 }
