@@ -1,7 +1,7 @@
 <launch4jConfig>
     <headerType>gui</headerType>
     <outfile>./output/implauncher.exe</outfile>
-    <jar>./output/implauncher.jar</jar>
+    <jar>implauncher.jar</jar>
     <dontWrapJar>true</dontWrapJar>
     <downloadUrl>http://adoptium.net/download</downloadUrl>
     <icon>./implauncher-data/imp-portrait.ico</icon>
