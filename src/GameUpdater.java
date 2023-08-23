@@ -140,7 +140,7 @@ public class GameUpdater {
                     KfxReleaseType.ALPHA,
                     this.currentSemver,
                     latestAlphaSemver,
-                    "https://keeperfx.net/download/" + (String) releaseObj.get("filename"));
+                    (String) releaseObj.get("download_url"));
         }
     }
 
