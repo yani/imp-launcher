@@ -3,6 +3,7 @@ package src;
 import java.awt.*;
 import javax.swing.BorderFactory;
 import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 
@@ -13,6 +14,7 @@ public class Theme {
             // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
+            // Window
             UIManager.put("InternalFrame.activeTitleBackground", new ColorUIResource(new Color(35, 35, 35)));
             UIManager.put("InternalFrame.activeTitleForeground", new ColorUIResource(Color.WHITE));
             UIManager.put("InternalFrame.titleFont", new Font("Dialog", Font.PLAIN, 11));
@@ -22,11 +24,14 @@ public class Theme {
             UIManager.put("OptionPane.background", new Color(40, 40, 40));
             UIManager.put("OptionPane.foreground", new Color(230, 230, 230));
             UIManager.put("OptionPane.messageForeground", new Color(230, 230, 230));
+
             // Panels
             UIManager.put("Panel.background", new Color(40, 40, 40));
             UIManager.put("Panel.foreground", Color.WHITE);
+
             // Labels
             UIManager.put("Label.foreground", new Color(230, 230, 230));
+
             // Buttons
             UIManager.put("Button.background", new Color(32, 32, 32));
             UIManager.put("Button.foreground", Color.WHITE);
@@ -34,14 +39,16 @@ public class Theme {
             UIManager.put("Button.border", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("Button.focus", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("Button.highlight", new ColorUIResource(new Color(0, 0, 0, 0)));
+
             // Text field
             UIManager.put("TextField.background", new Color(32, 32, 32));
             UIManager.put("TextField.foreground", Color.WHITE);
-            UIManager.put("TextField.border", BorderFactory.createLineBorder(new Color(32, 32, 32), 7));
+            UIManager.put("TextField.border", new EmptyBorder(7, 7, 7, 7));
             UIManager.put("TextField.focus", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("TextField.highlight", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("TextField.disabledText", new Color(100, 100, 100));
             UIManager.put("TextField.caretColor", Color.WHITE);
+
             // TextArea
             UIManager.put("TextArea.background", new Color(32, 32, 32));
             UIManager.put("TextArea.foreground", Color.WHITE);
@@ -50,6 +57,7 @@ public class Theme {
             UIManager.put("TextArea.highlight", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("TextArea.disabledText", new Color(100, 100, 100));
             UIManager.put("TextArea.caretColor", Color.WHITE);
+
             // Checkbox
             UIManager.put("CheckBox.background", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("CheckBox.foreground", Color.WHITE);
@@ -57,18 +65,19 @@ public class Theme {
             UIManager.put("CheckBox.border", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("CheckBox.focus", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("CheckBox.highlight", new ColorUIResource(new Color(0, 0, 0, 0)));
-            // TextArea
-            UIManager.put("ComboBox.background", new Color(32, 32, 32));
-            UIManager.put("ComboBox.foreground", Color.LIGHT_GRAY);
-            UIManager.put("ComboBox.border", BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            // ComboBox
+            UIManager.put("ComboBox.background", new ColorUIResource(new Color(32, 32, 32)));
+            UIManager.put("ComboBox.foreground", new ColorUIResource(UIManager.getColor("TextField.foreground")));
             UIManager.put("ComboBox.disabledText", new Color(100, 100, 100));
             UIManager.put("ComboBox.buttonBackground", new Color(32, 32, 32));
             UIManager.put("ComboBox.selectionBackground", new Color(32, 32, 32));
-            UIManager.put("ComboBox.selectionForeground", Color.WHITE);
             UIManager.put("ComboBox.borderPainted", false);
             UIManager.put("ComboBox.buttonDarkShadow", null);
             UIManager.put("ComboBox.buttonShadow", null);
             UIManager.put("ComboBox.buttonHighlight", null);
+            UIManager.put("ComboBox.selectionForeground", new ColorUIResource(Color.WHITE));
+
             // Progress bar
             // progressBar.setUI((ProgressBarUI) BasicProgressBarUI.createUI(progressBar));
             // // <<<< SET THIS on custom progress bars
@@ -76,6 +85,7 @@ public class Theme {
             UIManager.put("ProgressBar.selectionBackground", new Color(230, 230, 230));
             UIManager.put("ProgressBar.foreground", new Color(52, 52, 52));
             UIManager.put("ProgressBar.border", new ColorUIResource(new Color(32, 32, 32)));
+
             // ScrollPane
             UIManager.put("ScrollPane.background", new Color(45, 45, 45));
 

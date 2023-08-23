@@ -5,9 +5,12 @@ import java.io.*;
 import java.util.regex.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.metal.MetalButtonUI;
 
 import src.Setting.*;
@@ -333,20 +336,27 @@ public class Settings extends JDialog {
         component.setBackground(new Color(40, 40, 40));
 
         if (component instanceof JComboBox) {
-            ((JComboBox<String>) component).addActionListener(e -> this.saveButton.setVisible(true));
+            JComboBox<?> comboBox = (JComboBox<?>) component;
+            comboBox.setUI(new ThemeBasicComboBoxUI());
+            // comboBox.setEditor(new ThemeComboBoxEditor());
+            comboBox.setRenderer(new ThemeComboBoxRenderer());
+            comboBox.addActionListener(e -> this.saveButton.setVisible(true));
+
         } else if (component instanceof JCheckBox) {
-            ((JCheckBox) component).addActionListener(e -> this.saveButton.setVisible(true));
+            JCheckBox checkBox = (JCheckBox) component;
+            checkBox.addActionListener(e -> this.saveButton.setVisible(true));
+
         } else if (component instanceof JTextField) {
-            ((JTextField) component).getDocument().addDocumentListener(new DocumentListener() {
+            JTextField textField = (JTextField) component;
+            textField.setUI(new ThemeBasicTextFieldUI());
+            textField.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
-                    // Handle text insertion (field change)
                     saveButton.setVisible(true);
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent e) {
-                    // Handle text removal (field change)
                     saveButton.setVisible(true);
                 }
 

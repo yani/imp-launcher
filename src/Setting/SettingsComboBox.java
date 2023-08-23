@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.swing.JComboBox;
 
+import src.ThemeComboBoxEditor;
+
 public class SettingsComboBox {
 
     private Map<String, String> linkedHashMap = new LinkedHashMap<>();
