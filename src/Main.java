@@ -335,6 +335,10 @@ public class Main extends JFrame {
         }
 
         // Update thread
+        // This thread handles the following stuff:
+        // - It checks if it self-updated (and will remove update tool and show notice)
+        // - It will check if it needs to update itself
+        // - It will then check if we need to update the game
         new Thread(() -> {
             try {
 

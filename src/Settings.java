@@ -52,6 +52,9 @@ public class Settings extends JDialog {
     // Multiplayer panel
     private JTextField masterServerHostField;
 
+    // ImpLauncher panel
+    private JComboBox<String> gameBuildDropdown;
+
     private void loadPanelComponents() {
 
         // Gameplay
@@ -97,6 +100,9 @@ public class Settings extends JDialog {
 
         // Multiplayer
         masterServerHostField = new JTextField(Main.keeperFxCfg.getProperty("MASTERSERVER_HOST"), 20);
+
+        // ImpLauncher
+        gameBuildDropdown = GameBuild.createComboBox(Main.kfxReleaseType.toString());
     }
 
     public Settings(Main mainWindow) {
@@ -135,6 +141,7 @@ public class Settings extends JDialog {
         this.panelLeftTop.add(this.createMenuItemButton("Sound", "SOUND_PANEL"), BorderLayout.PAGE_START);
         this.panelLeftTop.add(this.createMenuItemButton("Input", "INPUT_PANEL"), BorderLayout.PAGE_START);
         this.panelLeftTop.add(this.createMenuItemButton("Multiplayer", "MP_PANEL"), BorderLayout.PAGE_START);
+        this.panelLeftTop.add(this.createMenuItemButton("ImpLauncher", "IMP_PANEL"), BorderLayout.PAGE_START);
 
         // Disable first button
         this.panelLeftTop.getComponents()[0].setEnabled(false);
@@ -164,8 +171,9 @@ public class Settings extends JDialog {
         cardPanel.add(this.gameplayPanel(), "GAMEPLAY_PANEL");
         cardPanel.add(this.gfxPanel(), "GFX_PANEL");
         cardPanel.add(this.soundPanel(), "SOUND_PANEL");
-        cardPanel.add(this.mpPanel(), "MP_PANEL");
         cardPanel.add(this.inputPanel(), "INPUT_PANEL");
+        cardPanel.add(this.mpPanel(), "MP_PANEL");
+        cardPanel.add(this.impPanel(), "IMP_PANEL");
         this.add(cardPanel, BorderLayout.CENTER);
 
         ////////////////////////////////////////////////////////////////////////
@@ -241,6 +249,12 @@ public class Settings extends JDialog {
         return createSettingsPanelContainer(panel);
     }
 
+    private JPanel impPanel() {
+        JPanel panel = createSettingsPanel();
+        panel.add(this.createSettingOption("Game Build", this.gameBuildDropdown, 40));
+        return createSettingsPanelContainer(panel);
+    }
+
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panel.setBorder(null);
@@ -304,6 +318,16 @@ public class Settings extends JDialog {
 
         // MP
         Main.keeperFxCfg.setProperty("MASTERSERVER_HOST", this.masterServerHostField.getText());
+
+        // IMPLAUNCHER
+
+        // Handle game build change
+        KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
+        if (newKfxReleaseType != Main.kfxReleaseType) {
+            if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
+                new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
+            }
+        }
 
         // Save .cfg file
         try {

@@ -35,10 +35,13 @@ import org.rauschig.jarchivelib.ArchiverFactory;
 
 public class GameUpdater {
 
+    private boolean shouldCancel = false;
+
     JFrame mainWindow;
     JDialog dialog = new JDialog();
 
-    KfxReleaseType releaseType;
+    KfxReleaseType currentReleaseType;
+    KfxReleaseType newReleaseType;
     String currentSemver;
     String newSemver;
     String downloadURL;
@@ -57,6 +60,10 @@ public class GameUpdater {
     }
 
     public void checkForUpdates() {
+        this.checkForUpdates(Main.kfxReleaseType);
+    }
+
+    public void checkForUpdates(KfxReleaseType wantedKfxReleaseType) {
 
         Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*).*");
 
@@ -73,17 +80,17 @@ public class GameUpdater {
 
         System.out.println("Current KFX version: " + this.currentSemver);
 
-        if (Main.kfxReleaseType == KfxReleaseType.STABLE) {
-            this.checkStable();
+        if (wantedKfxReleaseType == KfxReleaseType.STABLE) {
+            this.checkStable(wantedKfxReleaseType);
         }
 
-        if (Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-            this.checkAlpha();
+        if (wantedKfxReleaseType == KfxReleaseType.ALPHA) {
+            this.checkAlpha(wantedKfxReleaseType);
         }
 
     }
 
-    public void checkStable() {
+    public void checkStable(KfxReleaseType wantedKfxReleaseType) {
 
         System.out.println("Checking for Stable update..");
 
@@ -113,7 +120,7 @@ public class GameUpdater {
         }
     }
 
-    public void checkAlpha() {
+    public void checkAlpha(KfxReleaseType wantedKfxReleaseType) {
 
         System.out.println("Checking for Alpha update..");
 
@@ -144,9 +151,11 @@ public class GameUpdater {
         }
     }
 
-    public void showUpdaterUI(KfxReleaseType releaseType, String currentSemver, String newSemver, String downloadURL) {
+    public void showUpdaterUI(KfxReleaseType newReleaseType, String currentSemver, String newSemver,
+            String downloadURL) {
 
-        this.releaseType = releaseType;
+        this.currentReleaseType = Main.kfxReleaseType;
+        this.newReleaseType = newReleaseType;
         this.currentSemver = currentSemver;
         this.newSemver = newSemver;
         this.downloadURL = downloadURL;
@@ -161,6 +170,7 @@ public class GameUpdater {
         this.dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                shouldCancel = true;
                 if (updateThread != null) {
                     updateThread.interrupt();
                     updateThread = null;
@@ -180,9 +190,11 @@ public class GameUpdater {
         ////////////////////////////////////////////////////////////////////////
 
         String currentVersionString = currentSemver;
-        String newVersionString = newSemver;
-        if (releaseType == KfxReleaseType.ALPHA) {
+        if (currentReleaseType == KfxReleaseType.ALPHA) {
             currentVersionString += " (Alpha)";
+        }
+        String newVersionString = newSemver;
+        if (newReleaseType == KfxReleaseType.ALPHA) {
             newVersionString += " (Alpha)";
         }
 
@@ -233,6 +245,7 @@ public class GameUpdater {
         cancelButton.setPreferredSize(new Dimension(150, 50));
         cancelButton.setBackground(new Color(45, 45, 45));
         cancelButton.addActionListener(e -> {
+            shouldCancel = true;
             if (this.updateThread != null) {
                 this.updateThread.interrupt();
                 this.updateThread = null;
@@ -376,7 +389,7 @@ public class GameUpdater {
 
         return new Thread(() -> {
 
-            Path tempFilePath;
+            Path tempFilePath = null;
 
             // Update buttons
             updateButton.setText("Updating...");
@@ -474,6 +487,11 @@ public class GameUpdater {
                                 (int) ((totalBytesRead / fileSize) * 100));
                         progressBar.revalidate();
                         progressBar.repaint();
+
+                        // Check if we cancel the download
+                        if (shouldCancel) {
+                            throw new InterruptedException();
+                        }
                     }
                 }
 
@@ -492,6 +510,7 @@ public class GameUpdater {
                 ArchiveStream countStream = archiver.stream(archive);
                 while ((entry = countStream.getNextEntry()) != null) {
                     totalArchiveFileCount++;
+                    this.updateStatusLabel("Counting files for extraction: " + totalArchiveFileCount);
                 }
 
                 System.out.println("Total files: " + totalArchiveFileCount);
@@ -537,6 +556,11 @@ public class GameUpdater {
                     entry.extract(new File(Main.launcherRootDir));
 
                     currentFileNumber++;
+
+                    // Check if we cancel the extraction
+                    if (shouldCancel) {
+                        throw new InterruptedException();
+                    }
                 }
 
                 // Close archive stream
@@ -546,33 +570,39 @@ public class GameUpdater {
                 System.out.println("Files extracted!");
                 this.updateStatusLabel("Files extracted!");
 
+                // Update version variables of main app and show in GUI
+                Main.kfxReleaseType = newReleaseType;
+                Main.kfxVersion = this.newSemver;
+                if (this.newReleaseType == KfxReleaseType.ALPHA) {
+                    Main.kfxVersion += " Alpha";
+                }
+                Main.updateDisplayVersion();
+
+                // Show complete notice and close dialog
+                JOptionPane.showMessageDialog(this.mainWindow,
+                        "Success!\n" +
+                                "Your KeeperFX has been updated to: " + this.newSemver,
+                        "KeeperFX update completed!",
+                        JOptionPane.INFORMATION_MESSAGE);
+                this.dialog.dispose();
+
             } catch (InterruptedException ex) {
 
+                shouldCancel = false;
                 this.updateStatusLabel("Canceled");
 
-                // Reset buttons
-                updateButton.setText("Update");
-                updateButton.setEnabled(true);
-                cancelButton.setVisible(false);
-                closeButton.setVisible(true);
-
-                // Cancel update process
-                return;
-
             } catch (Exception ex) {
-                ex.printStackTrace();
 
+                ex.printStackTrace();
                 this.updateStatusLabel("Update failed...");
 
-                // Reset buttons
-                updateButton.setText("Update");
-                updateButton.setEnabled(true);
-                cancelButton.setVisible(false);
-                closeButton.setVisible(true);
-
-                // Cancel update process
-                return;
             }
+
+            // Reset buttons
+            updateButton.setText("Update");
+            updateButton.setEnabled(true);
+            cancelButton.setVisible(false);
+            closeButton.setVisible(true);
 
             // Clear temporary downloaded file
             if (tempFilePath != null) {
@@ -581,21 +611,6 @@ public class GameUpdater {
                     tempFile.delete();
                 }
             }
-
-            // Show new version in GUI
-            Main.kfxVersion = this.newSemver;
-            if (this.releaseType == KfxReleaseType.ALPHA) {
-                Main.kfxVersion += " Alpha";
-            }
-            Main.updateDisplayVersion();
-
-            // Show complete notice and close dialog
-            JOptionPane.showMessageDialog(this.mainWindow,
-                    "Success!\n" +
-                            "Your KeeperFX has been updated to: " + this.newSemver,
-                    "KeeperFX update completed!",
-                    JOptionPane.INFORMATION_MESSAGE);
-            this.dialog.dispose();
 
         });
     }
