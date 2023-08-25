@@ -40,11 +40,23 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
 
+        // Load launcher root dir variable
+        Main.loadLauncherRootDir();
+
         // Set theme defaults
         Theme.setupTheme();
 
         // Create Main GUI
         Main.main = new Main();
+
+        // Run startup checks
+        Main.main.appStartup();
+
+        // Load run options
+        Main.runOptions = new RunOptions();
+    }
+
+    public static void loadLauncherRootDir() {
 
         // Check if debugger is attached
         boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString()
@@ -84,12 +96,6 @@ public class Main extends JFrame {
             }
 
         }
-
-        // Run startup checks
-        Main.main.appStartup();
-
-        // Load run options
-        Main.runOptions = new RunOptions();
     }
 
     public Main() {
