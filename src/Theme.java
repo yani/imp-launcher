@@ -1,13 +1,12 @@
 package src;
 
 import java.awt.*;
-import javax.swing.BorderFactory;
-import javax.swing.UIManager;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.plaf.*;
 
 public class Theme {
+
     public static void setupTheme() {
 
         try {

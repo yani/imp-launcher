@@ -171,6 +171,7 @@ public class Main extends JFrame {
 
         // "Play" button (Bottom, Right panel)
         this.playButton.setPreferredSize(new Dimension(150, 50));
+        this.playButton.setFont(new Font("Consolas", Font.BOLD, 16));
         this.playButton.setEnabled(false); // Will be enabled after startup check
         panelRightBottom.add(this.playButton);
 
@@ -405,11 +406,13 @@ public class Main extends JFrame {
 
     public void enablePlayButton() {
         this.playButton.setText("Play");
+
+        this.playButton.setForeground(Color.WHITE);
         this.playButton.setBackground(new Color(0, 125, 185));
-        this.playButton.setFont(new Font("Consolas", Font.BOLD, 16));
-        // this.playButton.setBorderPainted(true);
-        this.playButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(31, 153, 205)));
+        this.playButton.setBorder(BorderFactory.createLineBorder(new Color(31, 153, 205), 1));
+
         this.playButton.setEnabled(true);
+        this.playButton.setFocusable(true);
 
         // Also enable Direct Connect
         this.directConnectButton.setEnabled(true);
@@ -417,9 +420,14 @@ public class Main extends JFrame {
 
     public void setPlayButtonAsPlaying() {
         this.playButton.setText("Running");
+
+        this.playButton.setForeground(Color.GRAY);
         this.playButton.setBackground(new Color(30, 30, 30));
-        this.playButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(180, 180, 180)));
+        this.playButton.setBorder(BorderFactory.createLineBorder(new Color(180, 180,
+                180), 1));
+
         this.playButton.setEnabled(false);
+        this.playButton.setFocusable(false);
 
         // Also disable Direct Connect
         this.directConnectButton.setEnabled(false);
