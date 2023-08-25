@@ -11,7 +11,7 @@ import org.json.simple.parser.JSONParser;
 
 public class RunOptions {
 
-    public static String gameLauncherArgsFilename = "imp-launcher.args.json";
+    public static String gameLauncherArgsFilename = "implauncher.run-args.json";
 
     public static File optionsFile = new File(
             Main.launcherRootDir + File.separator + RunOptions.gameLauncherArgsFilename);

@@ -43,6 +43,9 @@ public class Main extends JFrame {
         // Load launcher root dir variable
         Main.loadLauncherRootDir();
 
+        // Run migrations
+        Migrations.run();
+
         // Set theme defaults
         Theme.setupTheme();
 
