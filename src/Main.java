@@ -39,17 +39,17 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
 
-        // Load launcher root dir variable
-        Main.loadLauncherRootDir();
-
-        // Run migrations
-        Migrations.run();
-
         // Set theme defaults
         Theme.setupTheme();
 
         // Create Main GUI
         Main.main = new Main();
+
+        // Load launcher root dir variable
+        Main.loadLauncherRootDir();
+
+        // Run migrations
+        Migrations.run();
 
         // Run startup checks
         Main.main.appStartup();
