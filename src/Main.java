@@ -27,7 +27,6 @@ public class Main extends JFrame {
     public static String kfxVersion;
 
     public static CfgProperties keeperFxCfg;
-
     public static RunOptions runOptions;
 
     public JButton playButton = GuiUtil.createDefaultButton("Play");
@@ -189,7 +188,7 @@ public class Main extends JFrame {
         ////////////////////////////////////////////////////////////////////////////////
 
         // Main window
-        this.setTitle("KeeperFX - ImpLauncher");
+        this.setTitle("KeeperFX - ImpLauncher " + Main.impLauncherVersion);
         this.getContentPane().setBackground(new Color(50, 50, 50));
         this.setSize(700, 500);
         this.setResizable(false);
@@ -457,7 +456,7 @@ public class Main extends JFrame {
     }
 
     public static void updateDisplayVersion() {
-        Main.main.setTitle("KeeperFX (" + Main.kfxVersion + ") - ImpLauncher " + Main.impLauncherVersion);
+        Main.main.setTitle("KeeperFX - " + Main.kfxVersion + " - ImpLauncher " + Main.impLauncherVersion);
         Main.versionLabel.setText(Main.kfxVersion);
         Main.versionLabel.repaint();
         Main.versionLabel.getParent().repaint();
