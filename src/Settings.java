@@ -324,14 +324,7 @@ public class Settings extends JDialog {
         Main.keeperFxCfg.setProperty("MASTERSERVER_HOST", this.masterServerHostField.getText());
 
         // Updates
-
-        // Updates: Handle game build change
-        KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
-        if (newKfxReleaseType != Main.kfxReleaseType) {
-            if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-                new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
-            }
-        }
+        // TODO: allow user to choose if they want to enable/disable automatic updates
 
         // Save .cfg file
         try {
@@ -355,6 +348,14 @@ public class Settings extends JDialog {
         // Reset save button and close settings dialog
         this.saveButton.setVisible(false);
         this.dispose();
+
+        // Handle game build change
+        KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
+        if (newKfxReleaseType != Main.kfxReleaseType) {
+            if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
+                new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
+            }
+        }
     }
 
     private JPanel createSettingOption(String labelText, JComponent component, boolean isRunOption) {
