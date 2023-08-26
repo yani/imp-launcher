@@ -22,6 +22,8 @@ public class Settings extends JDialog {
     private JPanel cardPanel = new JPanel(new CardLayout());
     private JButton saveButton = GuiUtil.createDefaultButton("Save & Close");
 
+    private boolean runOptionChanged = false;
+
     // Gameplay panel
     private JComboBox<String> languageDropdown;
     private JCheckBox skipIntroCheckBox;
@@ -206,52 +208,54 @@ public class Settings extends JDialog {
 
     private JPanel gameplayPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Game Language", this.languageDropdown, 40));
-        panel.add(this.createSettingOption("Skip Intro", this.skipIntroCheckBox, 40));
-        panel.add(this.createSettingOption("Cheats", this.cheatsCheckBox, 40));
-        panel.add(this.createSettingOption("Censorship", this.censorCheckBox, 40));
-        panel.add(this.createSettingOption("Screenshot type", this.screenshotsDropdown, 40));
+        panel.add(this.createSettingOption("Game Language", this.languageDropdown, false));
+        panel.add(this.createSettingOption("Skip Intro", this.skipIntroCheckBox, true));
+        panel.add(this.createSettingOption("Cheats", this.cheatsCheckBox, true));
+        panel.add(this.createSettingOption("Censorship", this.censorCheckBox, false));
+        panel.add(this.createSettingOption("Screenshot type", this.screenshotsDropdown, false));
         return createSettingsPanelContainer(panel);
     }
 
     private JPanel gfxPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Resolution", this.resolutionDropdown, 40));
-        panel.add(this.createSettingOption("Display mode", this.displayModeDropdown, 40));
-        panel.add(this.createSettingOption("Smoothen Video", this.smoothenVidCheckBox, 40));
+        panel.add(this.createSettingOption("Resolution", this.resolutionDropdown, false));
+        panel.add(this.createSettingOption("Display mode", this.displayModeDropdown, false));
+        panel.add(this.createSettingOption("Smoothen Video", this.smoothenVidCheckBox, true));
         return createSettingsPanelContainer(panel);
     }
 
     private JPanel soundPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Sound", this.soundDisabledCheckBox, 40));
-        panel.add(this.createSettingOption("Use music files instead of CD", this.useMusicFilesCheckBox, 40));
-        panel.add(this.createSettingOption("Atmospheric Sounds", this.atmosEnabledCheckBox, 40));
-        panel.add(this.createSettingOption("Atmospheric Frequency", this.atmosFrequencyDropdown, 40));
-        panel.add(this.createSettingOption("Atmospheric Volume", this.atmosVolumeDropdown, 40));
-        panel.add(this.createSettingOption("Pause music when game is paused", this.pauseMusicWhenPausedCheckBox, 40));
-        panel.add(this.createSettingOption("Mute audio when game loses focus", this.muteAudioWhenNoFocusCheckBox, 40));
+        panel.add(this.createSettingOption("Sound", this.soundDisabledCheckBox, true));
+        panel.add(this.createSettingOption("Use music files instead of CD", this.useMusicFilesCheckBox, true));
+        panel.add(this.createSettingOption("Atmospheric Sounds", this.atmosEnabledCheckBox, false));
+        panel.add(this.createSettingOption("Atmospheric Frequency", this.atmosFrequencyDropdown, false));
+        panel.add(this.createSettingOption("Atmospheric Volume", this.atmosVolumeDropdown, false));
+        panel.add(
+                this.createSettingOption("Pause music when game is paused", this.pauseMusicWhenPausedCheckBox, false));
+        panel.add(
+                this.createSettingOption("Mute audio when game loses focus", this.muteAudioWhenNoFocusCheckBox, false));
         return createSettingsPanelContainer(panel);
     }
 
     private JPanel inputPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Mouse Sensitivity %\n(0 = raw input)", this.mouseSensitivityField, 40));
-        panel.add(this.createSettingOption("Alternative Input", this.altInputCheckBox, 40));
-        panel.add(this.createSettingOption("Unlock cursor when paused", this.unlockCursorOnPauseCheckBox, 40));
-        panel.add(this.createSettingOption("Screen edge camera panning", this.screenEdgeCameraPanCheckBox, 40));
+        panel.add(this.createSettingOption("Mouse Sensitivity %\n(0 = raw input)", this.mouseSensitivityField, false));
+        panel.add(this.createSettingOption("Alternative Input", this.altInputCheckBox, true));
+        panel.add(this.createSettingOption("Unlock cursor when paused", this.unlockCursorOnPauseCheckBox, false));
+        panel.add(this.createSettingOption("Screen edge camera panning", this.screenEdgeCameraPanCheckBox, false));
         return createSettingsPanelContainer(panel);
     }
 
     private JPanel mpPanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Masterserver", this.masterServerHostField, 40));
+        panel.add(this.createSettingOption("Masterserver", this.masterServerHostField, false));
         return createSettingsPanelContainer(panel);
     }
 
     private JPanel updatePanel() {
         JPanel panel = createSettingsPanel();
-        panel.add(this.createSettingOption("Game Build", this.gameBuildDropdown, 40));
+        panel.add(this.createSettingOption("Game Build", this.gameBuildDropdown, false));
         return createSettingsPanelContainer(panel);
     }
 
@@ -335,6 +339,16 @@ public class Settings extends JDialog {
         } catch (Exception ex) {
         }
 
+        // Show message that the game need to be launched with ImpLauncher if a run
+        // option has changed
+        if (this.runOptionChanged) {
+            JOptionPane.showMessageDialog(this,
+                    "You have changed a setting that only works when the game is launched using ImpLauncher." +
+                            "\nThese settings are marked with a blue asterisk \"*\".",
+                    "ImpLauncher",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
         // Remember run options
         Main.runOptions.saveOptionsToFile();
 
@@ -343,12 +357,16 @@ public class Settings extends JDialog {
         this.dispose();
     }
 
-    private JPanel createSettingOption(String labelText, JComponent component, int maxHeight) {
-        maxHeight = 38;
+    private JPanel createSettingOption(String labelText, JComponent component, boolean isRunOption) {
+        int maxHeight = 38;
         JPanel optionPanel = new JPanel(new BorderLayout());
         optionPanel.setPreferredSize(new Dimension(700 - 180, maxHeight + 32));
         optionPanel.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(20, 20, 20, 20), null));
-        // optionPanel.setBackground(new Color(35, 35, 35));
+
+        // Show asterisk next to run options
+        if (isRunOption) {
+            labelText += "<span style='color: #00E0F4'>*</span>";
+        }
 
         JLabel label = new JLabel("<html>" + labelText + "</html>");
         label.setBorder(new EmptyBorder(0, 0, 0, 20));
@@ -365,11 +383,15 @@ public class Settings extends JDialog {
             // comboBox.setEditor(new ThemeComboBoxEditor());
             comboBox.setRenderer(new ThemeComboBoxRenderer());
             comboBox.addActionListener(e -> this.saveButton.setVisible(true));
-
+            if (isRunOption) {
+                comboBox.addActionListener(e -> this.runOptionChanged = true);
+            }
         } else if (component instanceof JCheckBox) {
             JCheckBox checkBox = (JCheckBox) component;
             checkBox.addActionListener(e -> this.saveButton.setVisible(true));
-
+            if (isRunOption) {
+                checkBox.addActionListener(e -> this.runOptionChanged = true);
+            }
         } else if (component instanceof JTextField) {
             JTextField textField = (JTextField) component;
             textField.setUI(new ThemeBasicTextFieldUI());
@@ -377,11 +399,17 @@ public class Settings extends JDialog {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
                     saveButton.setVisible(true);
+                    if (isRunOption) {
+                        runOptionChanged = true;
+                    }
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent e) {
                     saveButton.setVisible(true);
+                    if (isRunOption) {
+                        runOptionChanged = true;
+                    }
                 }
 
                 @Override
