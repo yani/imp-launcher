@@ -59,6 +59,11 @@ public class GameUpdater {
         this.mainWindow = mainWindow;
     }
 
+    public void initialDownload() {
+        this.currentSemver = "None";
+        this.checkStable(KfxReleaseType.STABLE);
+    }
+
     public void checkForUpdates() {
         this.checkForUpdates(Main.kfxReleaseType);
     }
@@ -266,38 +271,40 @@ public class GameUpdater {
             RandomAccessFile randAccFile = null;
 
             // The following trick works for Windows and checks if the file is locked
-            if (!keeperFxFile.renameTo(keeperFxFile)) {
-                keeperFxFileLocked = true;
-            } else {
-
-                // Get file channel
-                try {
-                    randAccFile = new RandomAccessFile(keeperFxFile, "rw");
-                    channel = randAccFile.getChannel();
-                } catch (FileNotFoundException ex) {
-                    return;
-                }
-
-                // Try to get lock on file
-                try {
-                    lock = channel.tryLock();
-                } catch (Exception ex) {
+            if (keeperFxFile.exists()) {
+                if (!keeperFxFile.renameTo(keeperFxFile)) {
                     keeperFxFileLocked = true;
-                }
+                } else {
 
-                // Release lock and close streams
-                try {
-                    if (lock != null) {
-                        lock.release();
+                    // Get file channel
+                    try {
+                        randAccFile = new RandomAccessFile(keeperFxFile, "rw");
+                        channel = randAccFile.getChannel();
+                    } catch (FileNotFoundException ex) {
+                        return;
                     }
-                    if (channel != null) {
-                        channel.close();
+
+                    // Try to get lock on file
+                    try {
+                        lock = channel.tryLock();
+                    } catch (Exception ex) {
+                        keeperFxFileLocked = true;
                     }
-                    if (randAccFile != null) {
-                        randAccFile.close();
+
+                    // Release lock and close streams
+                    try {
+                        if (lock != null) {
+                            lock.release();
+                        }
+                        if (channel != null) {
+                            channel.close();
+                        }
+                        if (randAccFile != null) {
+                            randAccFile.close();
+                        }
+                    } catch (Exception ex) {
+                        return;
                     }
-                } catch (Exception ex) {
-                    return;
                 }
             }
 
@@ -505,12 +512,22 @@ public class GameUpdater {
                 Archiver archiver = ArchiverFactory.createArchiver(archive);
                 ArchiveEntry entry;
 
-                // Count files
+                // Count the number of files in the archive for the progress bar
                 int totalArchiveFileCount = 0;
-                ArchiveStream countStream = archiver.stream(archive);
-                while ((entry = countStream.getNextEntry()) != null) {
-                    totalArchiveFileCount++;
-                    this.updateStatusLabel("Counting files for extraction: " + totalArchiveFileCount);
+
+                // Check if this is a known archive
+                if (fileName.equals("keeperfx_0_5_0b_complete.7z")) {
+                    System.out.println("This is a known download, so we will not count the files");
+                    totalArchiveFileCount = 7739;
+                }
+
+                // Count files
+                if (totalArchiveFileCount == 0) {
+                    ArchiveStream countStream = archiver.stream(archive);
+                    while ((entry = countStream.getNextEntry()) != null) {
+                        totalArchiveFileCount++;
+                        this.updateStatusLabel("Counting files for extraction: " + totalArchiveFileCount);
+                    }
                 }
 
                 System.out.println("Total files: " + totalArchiveFileCount);
@@ -529,23 +546,32 @@ public class GameUpdater {
                         continue;
                     }
 
+                    // Set output file path
                     fileSubPath = entry.getName();
+                    entryOutputFile = new File(Main.launcherRootDir + File.separator + fileSubPath);
 
-                    // Handle 'keepercfg'
+                    // Handle KeeperFX configuration file
                     if (fileSubPath.equals("keeperfx.cfg") || fileSubPath.equals("_keeperfx.cfg")) {
-                        this.updateStatusLabel("Looking for new stuff in downloaded .cfg file");
-                        handleKeeperFxCfgEntry(entry, fileSubPath);
-                        currentFileNumber++;
-                        continue;
+
+                        // If this is a fresh install, we can simply copy the file
+                        if (fileSubPath.equals("keeperfx.cfg") && !entryOutputFile.exists()) {
+                            this.updateStatusLabel("Extracting the KeeperFX configuration file...");
+                        } else {
+
+                            // If it's an update (not a fresh install) we'll just copy the new
+                            // configuration variables into the existing configuration file
+                            this.updateStatusLabel("Looking for new stuff in downloaded .cfg file");
+                            handleKeeperFxCfgEntry(entry, fileSubPath);
+                            currentFileNumber++;
+                            continue;
+                        }
+
                     }
 
                     // Let user know status
                     System.out.println("Extracting: " + fileSubPath);
                     this.updateStatusLabel("Extracting :" + fileSubPath);
                     progressBar.setValue((int) (((float) currentFileNumber / (float) totalArchiveFileCount) * 100));
-
-                    // Set output file path
-                    entryOutputFile = new File(Main.launcherRootDir + File.separator + fileSubPath);
 
                     // Remove existing file
                     if (entryOutputFile.exists()) {
@@ -576,7 +602,6 @@ public class GameUpdater {
                 if (this.newReleaseType == KfxReleaseType.ALPHA) {
                     Main.kfxVersion += " Alpha";
                 }
-                Main.updateDisplayVersion();
 
                 // Show complete notice and close dialog
                 JOptionPane.showMessageDialog(this.mainWindow,
@@ -585,6 +610,10 @@ public class GameUpdater {
                         "KeeperFX update completed!",
                         JOptionPane.INFORMATION_MESSAGE);
                 this.dialog.dispose();
+
+                // Run app startup stuff again
+                // This will also update the displayed version
+                Main.main.appStartup();
 
             } catch (InterruptedException ex) {
 

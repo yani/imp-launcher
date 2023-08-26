@@ -246,16 +246,22 @@ public class Main extends JFrame {
         }
 
         // Check valid Kfx installation
-        // Just makes sure the launcher is placed with the keeperfx files
+        // Just makes sure the launcher is placed with the KeeperFX files
         String missingFile = KfxValidator.checkForMissingFile();
         if (missingFile != null) {
-            JOptionPane.showMessageDialog(this,
+
+            // Ask to install KFX
+            int openInstaller = JOptionPane.showConfirmDialog(this,
                     "Missing KeeperFX file: '" + missingFile + "'" +
-                            "\n\nMake sure to place ImpLauncher in your KeeperFX directory.",
-                    "ImpLauncher Error",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-            return;
+                            "\nMake sure to place ImpLauncher in your KeeperFX directory." +
+                            "\n\nDo you want to download KeeperFX (Stable) and" +
+                            "\nplace the files in the folder ImpLauncher is running from?",
+                    "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE);
+            if (openInstaller == JOptionPane.YES_OPTION) {
+                new Thread(() -> (new GameUpdater(Main.main)).initialDownload()).start();
+                return;
+            }
         }
 
         // Check if DK files are moved to KeeperFX
