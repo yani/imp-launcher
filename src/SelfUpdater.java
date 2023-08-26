@@ -31,6 +31,8 @@ import org.rauschig.jarchivelib.ArchiveStream;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 
+import com.vdurmont.semver4j.Semver;
+
 public class SelfUpdater {
 
     public static String endPointHost = "keeperfx.net";
@@ -130,13 +132,9 @@ public class SelfUpdater {
 
         System.out.println("Latest ImpLauncher version on KFX workshop: " + newVersion);
 
-        // If version differs from this ImpLauncher version, we'll ask to update
-        // This will also update version that are not available on KeeperFX.net to the
-        // lower version,
-        // but this can only really happen during development or prototyping.
-        // If required this check can just be replaced with a decent Semver check.
-        if (newVersion.equals(Main.impLauncherVersion) == false) {
-            System.out.println("ImpLauncher version does not match. Asking user to update..");
+        // Check if a new version is found
+        if ((new Semver(newVersion)).isGreaterThan(Main.impLauncherVersion)) {
+            System.out.println("New ImpLauncher version found. Asking user to update..");
             this.showSelfUpdaterUI(newVersion, (String) latestFile.get("url"));
         }
     }
