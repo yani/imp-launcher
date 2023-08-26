@@ -314,7 +314,7 @@ public class Main extends JFrame {
             Main.keeperFxCfg.load(new FileInputStream(keeperFxCfg.getPath().toString()));
         } catch (Exception ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed read 'keeperfx.cfg'",
+            JOptionPane.showMessageDialog(this, "Failed to read 'keeperfx.cfg'",
                     "ImpLauncher Error",
                     JOptionPane.WARNING_MESSAGE);
             System.exit(ERROR);
