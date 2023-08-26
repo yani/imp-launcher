@@ -603,13 +603,13 @@ public class GameUpdater {
                     Main.kfxVersion += " Alpha";
                 }
 
-                // Show complete notice and close dialog
+                // Close dialog and show notice
+                this.dialog.dispose();
                 JOptionPane.showMessageDialog(this.mainWindow,
                         "Success!\n" +
                                 "Your KeeperFX has been updated to: " + this.newSemver,
                         "KeeperFX update completed!",
                         JOptionPane.INFORMATION_MESSAGE);
-                this.dialog.dispose();
 
                 // Run app startup stuff again
                 // This will also update the displayed version
