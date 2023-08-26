@@ -258,7 +258,7 @@ public class SelfUpdater {
         if (printConsole != false) {
             System.out.println(text);
         }
-        statusLabel.setText("<html>Status: " + text + "</html>");
+        statusLabel.setText("<html>" + text + "</html>");
     }
 
     private Thread createUpdateThread() {

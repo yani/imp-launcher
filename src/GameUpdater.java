@@ -335,7 +335,7 @@ public class GameUpdater {
     }
 
     private void updateStatusLabel(String text) {
-        statusLabel.setText("<html>Status: " + text + "</html>");
+        statusLabel.setText("<html>" + text + "</html>");
     }
 
     private void handleKeeperFxCfgEntry(ArchiveEntry entry, String fileSubPath) {
