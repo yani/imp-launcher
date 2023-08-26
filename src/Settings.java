@@ -52,7 +52,7 @@ public class Settings extends JDialog {
     // Multiplayer panel
     private JTextField masterServerHostField;
 
-    // ImpLauncher panel
+    // Updates panel
     private JComboBox<String> gameBuildDropdown;
 
     private void loadPanelComponents() {
@@ -101,7 +101,7 @@ public class Settings extends JDialog {
         // Multiplayer
         masterServerHostField = new JTextField(Main.keeperFxCfg.getProperty("MASTERSERVER_HOST"), 20);
 
-        // ImpLauncher
+        // Updates
         gameBuildDropdown = GameBuild.createComboBox(Main.kfxReleaseType.toString());
     }
 
@@ -141,7 +141,7 @@ public class Settings extends JDialog {
         this.panelLeftTop.add(this.createMenuItemButton("Sound", "SOUND_PANEL"), BorderLayout.PAGE_START);
         this.panelLeftTop.add(this.createMenuItemButton("Input", "INPUT_PANEL"), BorderLayout.PAGE_START);
         this.panelLeftTop.add(this.createMenuItemButton("Multiplayer", "MP_PANEL"), BorderLayout.PAGE_START);
-        this.panelLeftTop.add(this.createMenuItemButton("ImpLauncher", "IMP_PANEL"), BorderLayout.PAGE_START);
+        this.panelLeftTop.add(this.createMenuItemButton("Updates", "UPDATE_PANEL"), BorderLayout.PAGE_START);
 
         // Disable first button
         this.panelLeftTop.getComponents()[0].setEnabled(false);
@@ -173,7 +173,7 @@ public class Settings extends JDialog {
         cardPanel.add(this.soundPanel(), "SOUND_PANEL");
         cardPanel.add(this.inputPanel(), "INPUT_PANEL");
         cardPanel.add(this.mpPanel(), "MP_PANEL");
-        cardPanel.add(this.impPanel(), "IMP_PANEL");
+        cardPanel.add(this.updatePanel(), "UPDATE_PANEL");
         this.add(cardPanel, BorderLayout.CENTER);
 
         ////////////////////////////////////////////////////////////////////////
@@ -249,7 +249,7 @@ public class Settings extends JDialog {
         return createSettingsPanelContainer(panel);
     }
 
-    private JPanel impPanel() {
+    private JPanel updatePanel() {
         JPanel panel = createSettingsPanel();
         panel.add(this.createSettingOption("Game Build", this.gameBuildDropdown, 40));
         return createSettingsPanelContainer(panel);
@@ -319,9 +319,9 @@ public class Settings extends JDialog {
         // MP
         Main.keeperFxCfg.setProperty("MASTERSERVER_HOST", this.masterServerHostField.getText());
 
-        // IMPLAUNCHER
+        // Updates
 
-        // Handle game build change
+        // Updates: Handle game build change
         KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
         if (newKfxReleaseType != Main.kfxReleaseType) {
             if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
