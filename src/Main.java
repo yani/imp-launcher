@@ -261,6 +261,8 @@ public class Main extends JFrame {
             if (openInstaller == JOptionPane.YES_OPTION) {
                 new Thread(() -> (new GameUpdater(Main.main)).initialDownload()).start();
                 return;
+            } else {
+                System.exit(0);
             }
         }
 
