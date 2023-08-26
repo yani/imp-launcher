@@ -39,6 +39,8 @@ public class GameLauncher {
 
     public void startGame(ArrayList<String> extraArguments) {
 
+        this.mainWindow.setPlayButtonAsPlaying();
+
         int exitCode = -1;
         String gameConsoleOutput = "";
 
@@ -88,9 +90,9 @@ public class GameLauncher {
 
             // Create and start the process
             Process process = processBuilder.start();
-            if (process.isAlive()) {
-                this.mainWindow.setPlayButtonAsPlaying();
-            }
+            // if (process.isAlive()) {
+            // this.mainWindow.setPlayButtonAsPlaying();
+            // }
 
             // Open output reader and redirect output to java output
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
