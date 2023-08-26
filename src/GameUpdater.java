@@ -33,8 +33,6 @@ import org.rauschig.jarchivelib.ArchiveStream;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
 
-import com.vdurmont.semver4j.Semver;
-
 public class GameUpdater {
 
     private boolean shouldCancel = false;
@@ -116,9 +114,9 @@ public class GameUpdater {
         String latestStableSemver = m.group(1) + "." + m.group(2);
         System.out.println("Latest KeeperFX.net stable version: " + latestStableSemver);
 
-        // Check if version is newer
-        if ((new Semver(latestStableSemver)).isGreaterThan(this.currentSemver)) {
-            System.out.println("New version found. Asking users to download");
+        // New version!
+        if (!this.currentSemver.equals(latestStableSemver)) {
+            System.out.println("Versions do not match. Asking users to download");
             this.showUpdaterUI(
                     KfxReleaseType.STABLE,
                     this.currentSemver,
@@ -148,7 +146,7 @@ public class GameUpdater {
         System.out.println("Latest KeeperFX.net alpha version: " + latestAlphaSemver);
 
         // New version!
-        if ((new Semver(latestAlphaSemver)).isGreaterThan(this.currentSemver)) {
+        if (!this.currentSemver.equals(latestAlphaSemver)) {
             System.out.println("Versions do not match. Asking users to download");
             this.showUpdaterUI(
                     KfxReleaseType.ALPHA,
