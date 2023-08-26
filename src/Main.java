@@ -29,6 +29,8 @@ public class Main extends JFrame {
     public static CfgProperties keeperFxCfg;
     public static RunOptions runOptions;
 
+    public JPanel panelRightTop = new JPanel(new GridLayout(0, 1, 6, 6));
+
     public JButton playButton = GuiUtil.createDefaultButton("Play");
     public JButton installButton = GuiUtil.createDefaultButton("Install");
     public JButton logFileButton = GuiUtil.createDefaultButton("Log");
@@ -112,45 +114,44 @@ public class Main extends JFrame {
         ////////////////////////////////////////////////////////////////////////////////
 
         // Top part of right panel
-        JPanel panelRightTop = new JPanel(new GridLayout(0, 1, 6, 6));
-        panelRightTop.setBackground(new Color(35, 35, 35));
-        panelRight.add(panelRightTop, BorderLayout.PAGE_START);
+        this.panelRightTop.setBackground(new Color(35, 35, 35));
+        panelRight.add(this.panelRightTop, BorderLayout.PAGE_START);
 
         // "Workshop" button (Top, Right panel)
         JButton workshopButton = GuiUtil.createDefaultButton("Workshop");
         workshopButton.setPreferredSize(new Dimension(150, 50));
         workshopButton.addActionListener(e -> Main.openBrowserURL("https://keeperfx.net/workshop/browse"));
-        panelRightTop.add(workshopButton, BorderLayout.PAGE_START);
+        this.panelRightTop.add(workshopButton, BorderLayout.PAGE_START);
 
         // "Settings" button (Top, Right panel)
         JButton settingsButton = GuiUtil.createDefaultButton("Settings");
         settingsButton.setPreferredSize(new Dimension(150, 50));
         settingsButton.addActionListener(e -> new Settings(this));
-        panelRightTop.add(settingsButton, BorderLayout.PAGE_START);
+        this.panelRightTop.add(settingsButton, BorderLayout.PAGE_START);
 
         // "Install" button (Top, Right panel)
         this.installButton.setPreferredSize(new Dimension(150, 50));
         this.installButton.addActionListener(e -> new Install(this));
-        panelRightTop.add(this.installButton, BorderLayout.PAGE_START);
+        this.panelRightTop.add(this.installButton, BorderLayout.PAGE_START);
 
         // "Log" button (Top, Right panel)
         this.logFileButton.setPreferredSize(new Dimension(150, 50));
         this.logFileButton.addActionListener(e -> this.openLogFile());
         this.logFileButton.setEnabled(false);
-        panelRightTop.add(this.logFileButton, BorderLayout.PAGE_START);
+        this.panelRightTop.add(this.logFileButton, BorderLayout.PAGE_START);
 
         // "Direct Connect" button (Top, Right panel)
         this.directConnectButton.setPreferredSize(new Dimension(150, 50));
         this.directConnectButton.setEnabled(false);
         this.directConnectButton.addActionListener(e -> new DirectConnect(this));
-        panelRightTop.add(this.directConnectButton, BorderLayout.PAGE_START);
+        this.panelRightTop.add(this.directConnectButton, BorderLayout.PAGE_START);
 
         // Multiplayer lobby count
         Main.mpLobbyCountLabel = new JLabel("");
         Main.mpLobbyCountLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
         Main.mpLobbyCountLabel.setPreferredSize(new Dimension(150, 20));
         Main.mpLobbyCountLabel.setForeground(Color.GRAY);
-        panelRightTop.add(Main.mpLobbyCountLabel, BorderLayout.CENTER);
+        this.panelRightTop.add(Main.mpLobbyCountLabel, BorderLayout.CENTER);
 
         ////////////////////////////////////////////////////////////////////////////////
 
@@ -267,18 +268,16 @@ public class Main extends JFrame {
         }
 
         // Check if DK files are moved to KeeperFX
-        if (Install.isInstalled()) {
-            this.enablePlayButton();
-            this.installButton.setText("Reinstall");
-        } else {
-            // Show message box that opens the Install panel
-            int openInstaller = JOptionPane.showConfirmDialog(this,
-                    "KeeperFX requires the original Dungeon Keeper files in order to be playable.\nDo you want to start the installer?",
-                    "ImpLauncher Installation", JOptionPane.YES_NO_OPTION,
+        // If they are not, show a message box and force DK installation
+        if (!Install.isInstalled()) {
+            JOptionPane.showMessageDialog(null,
+                    "KeeperFX requires the original Dungeon Keeper files in order to be playable.\n\nPress OK to start the installation process.",
+                    "ImpLauncher Installation",
                     JOptionPane.INFORMATION_MESSAGE);
-            if (openInstaller == JOptionPane.YES_OPTION) {
-                new Install(this);
-            }
+            new Install(this);
+        } else {
+            this.enablePlayButton();
+            this.panelRightTop.remove(this.installButton);
         }
 
         // Check 'keeperfx.cfg'
