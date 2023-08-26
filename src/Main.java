@@ -253,7 +253,7 @@ public class Main extends JFrame {
             // Ask to install KFX
             int openInstaller = JOptionPane.showConfirmDialog(this,
                     "Missing KeeperFX file: '" + missingFile + "'" +
-                            "\nMake sure to place ImpLauncher in your KeeperFX directory." +
+                    // "\nMake sure to place ImpLauncher in your KeeperFX directory." +
                             "\n\nDo you want to download KeeperFX (Stable) and" +
                             "\nplace the files in the folder ImpLauncher is running from?",
                     "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
