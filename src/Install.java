@@ -374,14 +374,19 @@ public class Install extends JDialog {
 
         // Success!!
         this.printOutput("Installation finished!");
+        this.dispose();
 
-        // Enable Play button and rename Install button on main window
-        this.mainWindow.enablePlayButton();
-        this.mainWindow.installButton.setText("Reinstall");
+        // Re-run app startup stuff
+        Main.main.appStartup();
 
-        // Show message
-        JOptionPane.showMessageDialog(this, "Installation successful!", "ImpLauncher Installation",
+        // Show message and ask to open settings panel
+        int openSettingsResult = JOptionPane.showConfirmDialog(this.mainWindow,
+                "Installation successful!\nDo you want to open the Settings panel to configure your game?",
+                "KeeperFX Installation", JOptionPane.YES_NO_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
+        if (openSettingsResult == JOptionPane.YES_OPTION) {
+            new Settings(Main.main);
+        }
     }
 
     public boolean installUsingGOG(File dkRootDir) {
