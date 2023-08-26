@@ -336,8 +336,9 @@ public class Settings extends JDialog {
         // option has changed
         if (this.runOptionChanged) {
             JOptionPane.showMessageDialog(this,
-                    "You have changed a setting that only works when the game is launched using ImpLauncher." +
-                            "\nThese settings are marked with a blue asterisk \"*\".",
+                    "You have changed one or more settings that only work when the game is launched using ImpLauncher."
+                            + "\nThese settings are marked with a blue asterisk \"*\"."
+                            + "\nYou will have to use ImpLauncher to start your game.",
                     "ImpLauncher",
                     JOptionPane.INFORMATION_MESSAGE);
         }
