@@ -39,7 +39,7 @@ public class Install extends JDialog {
 
     private void showFailureAlert() {
         JOptionPane.showMessageDialog(this,
-                "Installation failed! Check the log for more details", "ImpLauncher Warning",
+                "Installation failed.\nSome extra information has been logged in the window.", "ImpLauncher Warning",
                 JOptionPane.ERROR_MESSAGE);
     }
 

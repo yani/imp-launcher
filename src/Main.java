@@ -253,9 +253,7 @@ public class Main extends JFrame {
 
             // Ask to install KFX
             int openInstaller = JOptionPane.showConfirmDialog(this,
-                    "Missing KeeperFX file: '" + missingFile + "'" +
-                    // "\nMake sure to place ImpLauncher in your KeeperFX directory." +
-                            "\n\nDo you want to download KeeperFX (Stable) and" +
+                    "Do you want to download KeeperFX (Stable) and" +
                             "\nplace the files in the folder ImpLauncher is running from?",
                     "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE);
@@ -263,6 +261,9 @@ public class Main extends JFrame {
                 new Thread(() -> (new GameUpdater(Main.main)).initialDownload()).start();
                 return;
             } else {
+                JOptionPane.showMessageDialog(this, "Missing KeeperFX file: '" + missingFile + "'" +
+                        "\nMake sure ImpLauncher is placed in your KeeperFX directory.", "ImpLauncher Error",
+                        JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
         }
