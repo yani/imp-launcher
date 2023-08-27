@@ -64,10 +64,12 @@ public class Install extends JDialog {
         ////////////////////////////////////////////////////////////////////////
 
         // Info label
-        String dkPathInfoText = "Browse and select your original Dungeon Keeper directory.<br />You can use the digital Gold edition or the original CD.";
+        String dkPathInfoText = "Browse and select your original Dungeon Keeper folder." +
+                " You can use the digital Gold edition (GOG/EA) or the original CD." +
+                " This folder will be used to copy over the original Dungeon Keeper files.";
         JLabel dkPathInfoLabel = new JLabel("<html>" + dkPathInfoText + "</html>");
-        dkPathInfoLabel.setPreferredSize(new Dimension(460, 65));
-        dkPathInfoLabel.setBorder(new EmptyBorder(0, 0, 30, 0));
+        dkPathInfoLabel.setPreferredSize(new Dimension(460, 85));
+        dkPathInfoLabel.setBorder(new EmptyBorder(0, 0, 25, 0));
         mainPanel.add(dkPathInfoLabel);
 
         ////////////////////////////////////////////////////////////////////////
@@ -129,8 +131,8 @@ public class Install extends JDialog {
         this.installOutput.setAutoscrolls(true);
 
         JScrollPane scrollOutput = new JScrollPane(this.installOutput);
-        scrollOutput.setPreferredSize(new Dimension(460, 200));
-        scrollOutput.setBounds(0, 0, 460, 200);
+        scrollOutput.setPreferredSize(new Dimension(460, 185));
+        scrollOutput.setBounds(0, 0, 460, 185);
         scrollOutput.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollOutput.setBorder(null);
         scrollOutput.getVerticalScrollBar().setUI(new ThemeBasicScrollBarUI());
@@ -249,6 +251,7 @@ public class Install extends JDialog {
         // Make sure we now know what installation the user has
         if (installType == null) {
             this.printOutput("Unable to determine Dungeon Keeper installation type");
+            this.printOutput("Is this the correct Dungeon Keeper folder?");
             this.showFailureAlert();
             return;
         }

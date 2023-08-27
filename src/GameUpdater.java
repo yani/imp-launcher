@@ -570,7 +570,7 @@ public class GameUpdater {
 
                     // Let user know status
                     System.out.println("Extracting: " + fileSubPath);
-                    this.updateStatusLabel("Extracting :" + fileSubPath);
+                    this.updateStatusLabel("Extracting: " + fileSubPath);
                     progressBar.setValue((int) (((float) currentFileNumber / (float) totalArchiveFileCount) * 100));
 
                     // Remove existing file
