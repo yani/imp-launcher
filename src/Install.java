@@ -384,11 +384,11 @@ public class Install extends JDialog {
 
         // Show message and ask to open settings panel
         int openSettingsResult = JOptionPane.showConfirmDialog(this.mainWindow,
-                "Installation successful!\nDo you want to open the Settings panel to configure your game?",
+                "Installation successful!\n\nDo you want to use the suggested ImpLauncher settings for KeeperFX?",
                 "KeeperFX Installation", JOptionPane.YES_NO_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
         if (openSettingsResult == JOptionPane.YES_OPTION) {
-            new Settings(Main.main);
+            SettingsSuggestion.change();
         }
     }
 
