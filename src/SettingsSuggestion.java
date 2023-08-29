@@ -39,6 +39,8 @@ public class SettingsSuggestion {
         }
 
         // SOUND
+        // TODO: make -nocd dynamic based on if the .ogg music files are present
+        // this settingssuggestion code is ran AFTER the music is downloaded so ye
         Main.runOptions.toggleOption("nosound", false);
         Main.runOptions.toggleOption("nocd", true);
         Main.keeperFxCfg.setProperty("ATMOSPHERIC_SOUNDS", "ON");
