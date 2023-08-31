@@ -322,9 +322,16 @@ public class Main extends JFrame {
             System.exit(ERROR);
         }
 
-        // Get version of KeeperFX
         try {
+            // Get version of KeeperFX
             Main.kfxVersion = EXEFileInfo.getFileVersion(Main.launcherRootDir + File.separator + "keeperfx.exe");
+
+            // Remove semver from prototype builds
+            if (Main.kfxVersion.contains("Prototype")) {
+                Main.kfxVersion = "Prototype "
+                        + Main.kfxVersion.substring(Main.kfxVersion.lastIndexOf("_") + 1);
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to get KeeperFX version",
