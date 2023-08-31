@@ -65,7 +65,11 @@ public class GameUpdater {
 
     public void customVersionDownload(String currentSemVerString, KfxReleaseType wantedReleaseType) {
         this.currentSemver = currentSemVerString;
-        this.checkStable(wantedReleaseType);
+        if (wantedReleaseType == KfxReleaseType.STABLE) {
+            this.checkStable();
+        } else if (wantedReleaseType == KfxReleaseType.ALPHA) {
+            this.checkAlpha();
+        }
     }
 
     public void checkForUpdates() {
@@ -90,16 +94,16 @@ public class GameUpdater {
         System.out.println("Current KFX version: " + this.currentSemver);
 
         if (wantedKfxReleaseType == KfxReleaseType.STABLE) {
-            this.checkStable(wantedKfxReleaseType);
+            this.checkStable();
         }
 
         if (wantedKfxReleaseType == KfxReleaseType.ALPHA) {
-            this.checkAlpha(wantedKfxReleaseType);
+            this.checkAlpha();
         }
 
     }
 
-    public void checkStable(KfxReleaseType wantedKfxReleaseType) {
+    public void checkStable() {
 
         System.out.println("Checking for Stable update..");
 
@@ -129,7 +133,7 @@ public class GameUpdater {
         }
     }
 
-    public void checkAlpha(KfxReleaseType wantedKfxReleaseType) {
+    public void checkAlpha() {
 
         System.out.println("Checking for Alpha update..");
 
