@@ -60,8 +60,12 @@ public class GameUpdater {
     }
 
     public void initialDownload() {
-        this.currentSemver = "None";
-        this.checkStable(KfxReleaseType.STABLE);
+        this.customVersionDownload("None", KfxReleaseType.STABLE);
+    }
+
+    public void customVersionDownload(String currentSemVerString, KfxReleaseType wantedReleaseType) {
+        this.currentSemver = currentSemVerString;
+        this.checkStable(wantedReleaseType);
     }
 
     public void checkForUpdates() {
