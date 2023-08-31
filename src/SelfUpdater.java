@@ -146,7 +146,7 @@ public class SelfUpdater {
         // Create update dialog
         this.dialog.setTitle("ImpLauncher updater");
         this.dialog.getContentPane().setBackground(new Color(50, 50, 50));
-        this.dialog.setSize(400, 235);
+        this.dialog.setSize(400, 260);
         this.dialog.setResizable(false);
         this.dialog.setModal(true);
         this.dialog.setLocationRelativeTo(this.mainWindow);
