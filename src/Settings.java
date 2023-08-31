@@ -353,7 +353,7 @@ public class Settings extends JDialog {
         // Handle game build change
         KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
         if (newKfxReleaseType != Main.kfxReleaseType) {
-            if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
+            if (newKfxReleaseType == KfxReleaseType.STABLE || newKfxReleaseType == KfxReleaseType.ALPHA) {
                 new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
             }
         }
