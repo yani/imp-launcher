@@ -353,8 +353,17 @@ public class Settings extends JDialog {
         // Handle game build change
         KfxReleaseType newKfxReleaseType = KfxReleaseType.valueOf(GameBuild.getKey(this.gameBuildDropdown));
         if (newKfxReleaseType != Main.kfxReleaseType) {
-            if (newKfxReleaseType == KfxReleaseType.STABLE || newKfxReleaseType == KfxReleaseType.ALPHA) {
-                new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
+
+            // If we are currently on a prototype
+            if (Main.kfxReleaseType == KfxReleaseType.PROTOTYPE) {
+                new Thread(() -> (new GameUpdater(Main.main)).customVersionDownload("Prototype", newKfxReleaseType))
+                        .start();
+            } else {
+
+                // If we are not on a prototype we do a normal update
+                if (newKfxReleaseType == KfxReleaseType.STABLE || newKfxReleaseType == KfxReleaseType.ALPHA) {
+                    new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
+                }
             }
         }
     }
