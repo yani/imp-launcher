@@ -234,14 +234,16 @@ public class Main extends JFrame {
         }
         if (permissionResult == false) {
 
+            // Create message to show to user.
+            // On Windows we'll tell the user to move KFX to a writeable directory.
             String permissionMessage = "Insufficient file permissions.\n" +
                     "ImpLauncher can not edit the files in the KeeperFX directory.";
-
             if (System.getProperty("os.name").toLowerCase().contains("windows") == true) {
                 permissionMessage += "\n\nIt's suggested to move KeeperFX to a location like: 'C:\\Games\\KeeperFX'\n";
             }
-
             JOptionPane.showMessageDialog(this, permissionMessage, "ImpLauncher Error", JOptionPane.ERROR_MESSAGE);
+
+            // Exit the launcher because write permission is required.
             System.exit(0);
             return;
         }
@@ -258,9 +260,15 @@ public class Main extends JFrame {
                     "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE);
             if (openInstaller == JOptionPane.YES_OPTION) {
-                new Thread(() -> (new GameUpdater(Main.main)).initialDownload()).start();
+
+                // Install KFX using the updater
+                new Thread(() -> (new GameUpdater(Main.main)).customVersionDownload("None", KfxReleaseType.STABLE))
+                        .start();
                 return;
             } else {
+
+                // If we have a missing file and the users did NOT want to install,
+                // we'll quit the launcher because these files are required.
                 JOptionPane.showMessageDialog(this, "Missing KeeperFX file: '" + missingFile + "'" +
                         "\nMake sure ImpLauncher is placed in your KeeperFX directory.", "ImpLauncher Error",
                         JOptionPane.ERROR_MESSAGE);

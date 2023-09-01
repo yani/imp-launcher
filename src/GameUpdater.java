@@ -59,10 +59,6 @@ public class GameUpdater {
         this.mainWindow = mainWindow;
     }
 
-    public void initialDownload() {
-        this.customVersionDownload("None", KfxReleaseType.STABLE);
-    }
-
     public void customVersionDownload(String currentSemVerString, KfxReleaseType wantedReleaseType) {
         this.currentSemver = currentSemVerString;
         if (wantedReleaseType == KfxReleaseType.STABLE) {
