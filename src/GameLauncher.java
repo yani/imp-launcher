@@ -4,6 +4,7 @@ import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,28 +91,28 @@ public class GameLauncher {
 
             // Create and start the process
             Process process = processBuilder.start();
-            // if (process.isAlive()) {
-            // this.mainWindow.setPlayButtonAsPlaying();
-            // }
+            if (process.isAlive()) {
+                System.out.println("KeeperFX is now running!");
+            }
 
-            // Open output reader and redirect output to java output
+            // Open output reader and read game console output
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                System.out.println(line); // Print the output to the console
                 gameConsoleOutput += line + "\n";
             }
 
             // Wait for process to finish
             process.waitFor();
-            System.out.println("keeperfx process ended");
+            System.out.println("KeeperFX process ended");
 
             // Close output reader
             reader.close();
 
             // Get exit code
             exitCode = process.exitValue();
-            System.out.println("keeperfx exitcode: " + exitCode);
+            System.out.println("KeeperFX exitcode: " + exitCode);
 
             // Check for successful execution
             if (exitCode == 0) {
