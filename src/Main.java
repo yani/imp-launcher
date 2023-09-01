@@ -255,16 +255,57 @@ public class Main extends JFrame {
 
             // Ask to install KFX
             int openInstaller = JOptionPane.showConfirmDialog(this,
-                    "Do you want to download KeeperFX (Stable) and" +
-                            "\nplace the files in the folder ImpLauncher is running from?",
+                    "Do you want to download KeeperFX and place" +
+                            "\nthe files in the folder ImpLauncher is running from?",
                     "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE);
             if (openInstaller == JOptionPane.YES_OPTION) {
 
-                // Install KFX using the updater
-                new Thread(() -> (new GameUpdater(Main.main)).customVersionDownload("None", KfxReleaseType.STABLE))
-                        .start();
-                return;
+                // Ask what version of KeeperFX to install
+                // Show a dialog with options and store the selected option in a variable
+                String[] options = { "Stable", "Alpha", "Cancel" };
+                int selectedOption = JOptionPane.showOptionDialog(
+                        this,
+                        "Select the type of game release you want to use\n"
+                                + "\nStable:  Default release"
+                                + "\nAlpha:   Contains latest features and bugfixes"
+                                + "\n\n",
+                        "KeeperFX Installation", // Dialog title
+                        JOptionPane.DEFAULT_OPTION, // Option type (DEFAULT_OPTION for OK/Cancel)
+                        JOptionPane.INFORMATION_MESSAGE, // Message type (PLAIN_MESSAGE for informational message)
+                        null,
+                        options,
+                        options[0] // Default option (Stable)
+                );
+
+                // Check the selected option and take action accordingly
+                if (selectedOption == JOptionPane.CLOSED_OPTION || options[selectedOption].equals("Cancel")) {
+                    System.out.println("No option selected");
+                    System.exit(ERROR);
+                }
+
+                System.out.println("Selected option: " + options[selectedOption]);
+
+                // Tell the user that when selecting an alpha patch,
+                // The 'update' process is ran twice.
+                if (options[selectedOption].equals("Alpha")) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "It seems you want to install the Alpha version."
+                                    + "\nImpLauncher we will first download and install the Stable version."
+                                    + "\nYou will be prompted to 'update' KeeperFX twice. The second time will be much faster.",
+                            "ImpLauncher Error",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                // Install Stable version
+                (new GameUpdater(this)).customVersionDownload("None", KfxReleaseType.STABLE);
+
+                // Install Alpha after Stable
+                if (options[selectedOption].equals("Alpha")) {
+                    (new GameUpdater(this)).customVersionDownload("None", KfxReleaseType.ALPHA);
+                }
+
             } else {
 
                 // If we have a missing file and the users did NOT want to install,
@@ -278,6 +319,7 @@ public class Main extends JFrame {
 
         // Check if DK files are moved to KeeperFX
         // If they are not, show a message box and force DK installation
+        // The DK installation is NOT the KeeperFX installation
         if (!Install.isInstalled()) {
             JOptionPane.showMessageDialog(null,
                     "KeeperFX requires the original Dungeon Keeper files in order to be playable.\n\nPress OK to start the installation process.",
