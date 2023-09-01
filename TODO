@@ -7,3 +7,10 @@
 
 - Crash Report
     - If a savefile is added, check if it contains the campaign/mapnumber and if it's not a default one, we'll try and add it to the download
+
+- always use packetsave, include into crashreport
+
+ImpLauncher Options:
+    - look for implauncher updates
+    - look for game updates
+    - display number of open mp lobies

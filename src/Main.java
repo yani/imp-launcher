@@ -244,7 +244,7 @@ public class Main extends JFrame {
             JOptionPane.showMessageDialog(this, permissionMessage, "ImpLauncher Error", JOptionPane.ERROR_MESSAGE);
 
             // Exit the launcher because write permission is required.
-            System.exit(0);
+            System.exit(ERROR);
             return;
         }
 
@@ -272,7 +272,7 @@ public class Main extends JFrame {
                 JOptionPane.showMessageDialog(this, "Missing KeeperFX file: '" + missingFile + "'" +
                         "\nMake sure ImpLauncher is placed in your KeeperFX directory.", "ImpLauncher Error",
                         JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
+                System.exit(ERROR);
             }
         }
 
@@ -289,13 +289,15 @@ public class Main extends JFrame {
             this.panelRightTop.remove(this.installButton);
         }
 
-        // Check 'keeperfx.cfg'
+        // Check for 'keeperfx.cfg'
         File keeperFxCfg = new File(Main.launcherRootDir + File.separator + "keeperfx.cfg");
         if (!keeperFxCfg.exists()) {
 
-            // Check if we can copy _keeperfx.cfg (with an underscore)
+            // If it doesn't exist we'll check if we can copy _keeperfx.cfg (with an
+            // underscore).
+            // The file with an underscore is the one included in alpha patches to not
+            // overwrite already existing user settings.
             File defaultKeeperFxCfg = new File(Main.launcherRootDir + File.separator + "_keeperfx.cfg");
-
             if (defaultKeeperFxCfg.exists()) {
                 try {
                     Files.copy(defaultKeeperFxCfg.toPath(), keeperFxCfg.toPath(),
@@ -308,17 +310,19 @@ public class Main extends JFrame {
                 }
             }
 
-            // Double check and show message to user
+            // Double check to make sure 'keeperfx.cfg' exists now.
             if (!keeperFxCfg.exists() || !keeperFxCfg.canRead()) {
                 JOptionPane.showMessageDialog(this,
                         "No 'keeperfx.cfg' found. The game will not work without it.",
                         "ImpLauncher Error",
                         JOptionPane.ERROR_MESSAGE);
+
+                // Exit because this file is required
                 System.exit(ERROR);
             }
         }
 
-        // Load CFG
+        // Load 'keeperfx.cfg' into a Properties object
         try {
             Main.keeperFxCfg = new CfgProperties();
             Main.keeperFxCfg.load(new FileInputStream(keeperFxCfg.getPath().toString()));
@@ -359,9 +363,10 @@ public class Main extends JFrame {
 
         // Update thread
         // This thread handles the following stuff:
-        // - It checks if it self-updated (and will remove update tool and show notice)
-        // - It will check if it needs to update itself
-        // - It will then check if we need to update the game
+        // - It checks if the launcher recently self-updated (and will remove update
+        // tool and show a notice)
+        // - It will check if it needs to self-update itself
+        // - It will then check if we need to update KeeperFX
         new Thread(() -> {
             try {
 
@@ -380,14 +385,12 @@ public class Main extends JFrame {
                 }
 
                 // Handle possible self-update
-                SelfUpdater selfUpdater = new SelfUpdater(this);
-                selfUpdater.checkForUpdates();
+                (new SelfUpdater(this)).checkForUpdates();
 
                 // Handle possible updates
                 // Only when release is STABLE or ALPHA
                 if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-                    GameUpdater updater = new GameUpdater(this);
-                    updater.checkForUpdates();
+                    (new GameUpdater(this)).checkForUpdates();
                 }
 
             } catch (Exception ex) {
