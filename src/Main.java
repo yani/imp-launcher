@@ -266,9 +266,10 @@ public class Main extends JFrame {
                 String[] options = { "Stable", "Alpha", "Cancel" };
                 int selectedOption = JOptionPane.showOptionDialog(
                         this,
-                        "Select the type of game release you want to use\n"
-                                + "\nStable:  Default release"
-                                + "\nAlpha:   Contains latest features and bugfixes"
+                        "Select the type of game release you want to use:    \n"
+                                + "\nStable:    Default release"
+                                + "\nAlpha:     Contains latest development updates"
+                                + "\n\nAlpha versions contain new features but might be less stable.    "
                                 + "\n\n",
                         "KeeperFX Installation", // Dialog title
                         JOptionPane.DEFAULT_OPTION, // Option type (DEFAULT_OPTION for OK/Cancel)
@@ -286,8 +287,8 @@ public class Main extends JFrame {
 
                 System.out.println("Selected option: " + options[selectedOption]);
 
-                // Tell the user that when selecting an alpha patch,
-                // The 'update' process is ran twice.
+                // Tell the user the 'update' process is ran twice when
+                // selecting an alpha patch.
                 if (options[selectedOption].equals("Alpha")) {
                     JOptionPane.showMessageDialog(
                             this,
@@ -298,12 +299,15 @@ public class Main extends JFrame {
                             JOptionPane.INFORMATION_MESSAGE);
                 }
 
+                // TODO: disable messages after update (maybe have Install screen?)
+                //
+
                 // Install Stable version
                 (new GameUpdater(this)).customVersionDownload("None", KfxReleaseType.STABLE);
 
                 // Install Alpha after Stable
                 if (options[selectedOption].equals("Alpha")) {
-                    (new GameUpdater(this)).customVersionDownload("None", KfxReleaseType.ALPHA);
+                    (new GameUpdater(this)).customVersionDownload(Main.kfxVersion, KfxReleaseType.ALPHA);
                 }
 
             } else {
