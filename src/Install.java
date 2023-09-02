@@ -531,12 +531,12 @@ public class Install extends JDialog {
 
         // Check for GOG install
         if ((new File(path + File.separator + "DATA" + File.separator + "BLUEPAL.DAT")).exists()) {
-            filesToCheck = InstallFiles.cdFiles;
+            filesToCheck = InstallFiles.gogFiles;
         }
 
         // Check for manual install
         if ((new File(path + File.separator + "data" + File.separator + "BLUEPAL.DAT")).exists()) {
-            filesToCheck = InstallFiles.cdFiles;
+            filesToCheck = InstallFiles.manualInstallFiles;
         }
 
         if (filesToCheck == null) {
