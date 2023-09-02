@@ -293,7 +293,7 @@ public class Main extends JFrame {
                     JOptionPane.showMessageDialog(
                             this,
                             "It seems you want to install the Alpha version."
-                                    + "\nImpLauncher we will first download and install the Stable version."
+                                    + "\nImpLauncher will first download and install the Stable version."
                                     + "\nYou will be prompted to 'update' KeeperFX twice. The second time will be much faster.",
                             "ImpLauncher Error",
                             JOptionPane.INFORMATION_MESSAGE);
