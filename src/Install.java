@@ -19,12 +19,13 @@ public class Install extends JDialog {
     private Main mainWindow;
 
     private JTextField dkPathField = new JTextField(28);
+    private JButton browseButton = GuiUtil.createDefaultButton("Browse");
 
-    private JButton installButton = GuiUtil.createDefaultButton("Install");
+    private JCheckBox copyMusicCheckBox = new JCheckBox("Copy or extract music");
 
     private JTextArea installOutput = new JTextArea();
 
-    private JCheckBox copyMusicCheckBox = new JCheckBox("Copy or extract music");
+    private JButton installButton = GuiUtil.createDefaultButton("Install");
 
     private void printOutput(String text) {
         this.installOutput.append(
@@ -74,7 +75,7 @@ public class Install extends JDialog {
 
         ////////////////////////////////////////////////////////////////////////
 
-        // Info label
+        // Info label/home/yani/.wine/drive_c/GOG Games/Dungeon Keeper Gold
         String dkPathText = "Dungeon Keeper Location:";
         JLabel dkPathLabel = new JLabel("<html>" + dkPathText + "</html>");
         JPanel dkPathPanel = new JPanel(new BorderLayout());
@@ -91,9 +92,8 @@ public class Install extends JDialog {
         mainPanel.add(dkPathField);
 
         // Input browse button
-        JButton browseButton = GuiUtil.createDefaultButton("Browse");
-        browseButton.setPreferredSize(new Dimension(100, 30));
-        browseButton.addActionListener(e -> {
+        this.browseButton.setPreferredSize(new Dimension(100, 30));
+        this.browseButton.addActionListener(e -> {
             try {
                 JFileChooser fileChooser = new JFileChooser("");
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -109,7 +109,7 @@ public class Install extends JDialog {
                         JOptionPane.ERROR_MESSAGE);
             }
         });
-        mainPanel.add(browseButton);
+        mainPanel.add(this.browseButton);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -160,6 +160,9 @@ public class Install extends JDialog {
         bottomPanel.add(this.installButton, BorderLayout.PAGE_END);
 
         ////////////////////////////////////////////////////////////////////////
+
+        // Find a possible existing DK installation
+        (new Thread(() -> this.findExistingDungeonKeeperInstallation())).start();
 
         // Show window
         this.setVisible(true);
@@ -493,15 +496,108 @@ public class Install extends JDialog {
     }
 
     public static boolean isInstalled() {
-        // Loop trough music
+
+        // Loop trough Dungeon Keeper files
         for (String filePath : InstallFiles.kfxFiles) {
-            // Create file paths
+
+            // Check if file exists
             File file = new File(Main.launcherRootDir + File.separator + filePath);
             if (!file.exists()) {
+
+                // File does not exist!
+                System.out.println("File not found: " + filePath);
                 return false;
             }
         }
 
         return true;
+    }
+
+    public static boolean isSuitableDkDirectory(String path) {
+
+        File dkDir = new File(path);
+
+        // Make sure directory exists and is readable
+        if (!dkDir.exists() || !dkDir.isDirectory() || !dkDir.canRead()) {
+            return false;
+        }
+
+        String[] filesToCheck = null;
+
+        // Check for CD
+        if ((new File(path + File.separator + "data" + File.separator + "bluepal.dat")).exists()) {
+            filesToCheck = InstallFiles.cdFiles;
+        }
+
+        // Check for GOG install
+        if ((new File(path + File.separator + "DATA" + File.separator + "BLUEPAL.DAT")).exists()) {
+            filesToCheck = InstallFiles.cdFiles;
+        }
+
+        // Check for manual install
+        if ((new File(path + File.separator + "data" + File.separator + "BLUEPAL.DAT")).exists()) {
+            filesToCheck = InstallFiles.cdFiles;
+        }
+
+        if (filesToCheck == null) {
+            return false;
+        }
+
+        // Check all required files
+        for (String filePath : filesToCheck) {
+            if (!(new File(path + File.separator + filePath)).exists()) {
+
+                // File not found!
+                System.out.println("File not found: " + filePath);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void findExistingDungeonKeeperInstallation() {
+
+        System.out.println("Searching for existing Dungeon Keeper installation...");
+
+        // Disable buttons
+        this.installButton.setEnabled(false);
+        this.browseButton.setEnabled(false);
+
+        // Get the user's home folder
+        String userHome = System.getProperty("user.home");
+
+        // Find installations
+        for (String dirPath : (new String[] {
+
+                // Windows
+                "C:\\GOG Games\\Dungeon Keeper Gold", // Common GOG offline installer location
+                "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Dungeon Keeper Gold", // Common GOG Galaxy location
+                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\Data\\", // A Common Origin location
+
+                // Linux
+                userHome + "/.wine/drive_c/GOG Games/Dungeon Keeper Gold", // Common Wine + GOG location
+                userHome + "/Games/dungeon-keeper/drive_c/KeeperFX", // A Common Lutris location
+        })) {
+
+            // Set dir if it's valid
+            if (Install.isSuitableDkDirectory(dirPath)) {
+
+                System.out.println("Existing Dungeon Keeper installation folder found: " + dirPath);
+                JOptionPane.showMessageDialog(this,
+                        "A directory containing a Dungeon Keeper installation has been automatically detected."
+                                + "\nYou should be able to install the game using it.",
+                        "KeeperFX installer",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dkPathField.setText(dirPath);
+                this.printOutput("Path automatically selected: " + dirPath);
+
+                break;
+            }
+        }
+
+        // Enable GUI buttons again
+        this.installButton.setEnabled(true);
+        this.browseButton.setEnabled(true);
     }
 }
