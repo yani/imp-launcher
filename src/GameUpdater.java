@@ -607,13 +607,17 @@ public class GameUpdater {
                     Main.kfxVersion += " Alpha";
                 }
 
-                // Close dialog and show notice
-                this.dialog.dispose();
+                // Hide dialog and show notice
+                this.dialog.setVisible(false);
                 JOptionPane.showMessageDialog(this.mainWindow,
                         "Success!\n" +
                                 "Your KeeperFX has been updated to: " + this.newSemver,
                         "KeeperFX update completed!",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                // Close the dialog. We do this after hiding it and showing the above message so
+                // it doesn't trigger anything before the user clicks ok.
+                this.dialog.dispose();
 
                 // Run app startup stuff again
                 // This will also update the displayed version
