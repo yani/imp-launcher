@@ -571,12 +571,14 @@ public class Install extends JDialog {
         for (String dirPath : (new String[] {
 
                 // Windows
-                "C:\\GOG Games\\Dungeon Keeper Gold", // Common GOG offline installer location
-                "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Dungeon Keeper Gold", // Common GOG Galaxy location
-                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\Data\\", // A Common Origin location
+                "C:\\GOG Games\\Dungeon Keeper Gold",
+                "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Dungeon Keeper Gold",
+                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\Data",
 
                 // Linux
-                userHome + "/.wine/drive_c/GOG Games/Dungeon Keeper Gold", // Common Wine + GOG location
+                userHome + "/.wine/drive_c/GOG Games/Dungeon Keeper Gold",
+                userHome + "/.wine/drive_c/Program Files (x86)/GOG Galaxy/Games/Dungeon Keeper Gold",
+                userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper/Data",
                 userHome + "/Games/dungeon-keeper/drive_c/KeeperFX", // A Common Lutris location
         })) {
 
