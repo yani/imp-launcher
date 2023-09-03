@@ -172,8 +172,8 @@ public class IndexPanel extends JPanel {
 
                 // Get title (and limit the size)
                 String itemNameString = (String) item.get("name");
-                if (itemNameString.length() > 20) {
-                    itemNameString = itemNameString.substring(0, 18) + "...";
+                if (itemNameString.length() > 19) {
+                    itemNameString = itemNameString.substring(0, 17) + "...";
                 }
 
                 // Add title
