@@ -16,5 +16,14 @@ public class Migrations {
             }
         }
 
+        // Rename uppercase files in /data
+        for (String filePath : InstallFiles.manualInstallFiles) {
+            File file = new File(Main.launcherRootDir + File.separator + filePath);
+            File fileLowerCase = new File(Main.launcherRootDir + File.separator + filePath.toLowerCase());
+            if (file.exists() && !fileLowerCase.exists()) {
+                file.renameTo(fileLowerCase);
+            }
+        }
+
     }
 }
