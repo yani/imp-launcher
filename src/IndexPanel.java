@@ -131,7 +131,7 @@ public class IndexPanel extends JPanel {
 
                 JPanel workshopItem = new JPanel(new BorderLayout(0, 10));
                 workshopItem.setBackground(new Color(35, 35, 35));
-                workshopItem.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+                workshopItem.setBorder(BorderFactory.createEmptyBorder(8, 7, 8, 7));
                 workshopItem.setPreferredSize(new Dimension(262, 100));
 
                 GuiUtil.turnComponentIntoLink(workshopItem, (String) item.get("url"));
@@ -167,7 +167,7 @@ public class IndexPanel extends JPanel {
                 rl.setAlignment(RelativeLayout.LEADING);
                 JPanel infoBox = new JPanel(rl);
                 infoBox.setOpaque(false);
-                infoBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                infoBox.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 5));
                 workshopItem.add(infoBox, BorderLayout.CENTER);
 
                 // Get title (and limit the size)
@@ -180,6 +180,13 @@ public class IndexPanel extends JPanel {
                 JLabel itemNameLabel = new JLabel(itemNameString);
                 itemNameLabel.setFont(new Font("Consolas", Font.BOLD, 14));
                 infoBox.add(itemNameLabel);
+
+                // Add category
+                String categoryString = (String) item.get("category");
+                JLabel categoryLabel = new JLabel(WorkshopCategory.getConstantByString(categoryString));
+                categoryLabel.setFont(new Font("Monospace", Font.PLAIN, 11));
+                categoryLabel.setForeground(new Color(175, 175, 175));
+                infoBox.add(categoryLabel);
 
                 // Add date
                 String dateString = (String) item.get("created_timestamp");
