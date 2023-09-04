@@ -31,7 +31,7 @@ echo "[+] Creating .jar from application .class files..."
 jar cvfm ./output/implauncher.jar manifest.txt -C ./build . -C . ./implauncher-data
 chmod +x ./output/implauncher.jar
 echo "-----------------------------------------------------------"
-echo "[+] Creating application .exe wrapper..."
+echo "[+] Creating application .exe launcher..."
 ./bin/launch4j/launch4j ./config.l4j
 echo "-----------------------------------------------------------"
 echo "[+] Cleanup temp files and directories..."
