@@ -45,13 +45,14 @@ echo "[+] Cleanup temp files and directories..."
 rm -f -R ./build
 rm -f -R ./build-updater
 echo "-----------------------------------------------------------"
-if type "7z" > /dev/null; then
+if type "zip" > /dev/null; then
+    echo "[+] Removing possible existing archive..."
+    rm -f ./output/implauncher-$version.zip
     echo "[+] Archiving..."
-    7z a -t7z ./output/implauncher-$version.7z ./output/implauncher.exe ./output/implauncher.jar
-    echo "[+] Output: ./output/implauncher-$version.7z"
+    zip -j ./output/implauncher-$version.zip ./output/implauncher.exe ./output/implauncher.jar
+    echo "[+] Output: ./output/implauncher-$version.zip"
 else
-    echo "[-] '7z' command not found."
-    echo "[?] Run 'apt install p7zip-full'"
+    echo "[-] 'zip' command not found. (Install with 'apt install zip')"
 fi
 echo "-----------------------------------------------------------"
 echo "[+] Done!"
