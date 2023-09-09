@@ -1,3 +1,8 @@
+
+echo "-----------------------------------------------------------"
+version=$(grep -oP 'public static String impLauncherVersion = "\K\d+\.\d+\.\d+' ./src/Main.java)
+echo "[+] ImpLauncher Version: $version..."
+echo "-----------------------------------------------------------"
 echo "[+] Removing previously created files..."
 rm -f ./output/implauncher.jar
 rm -f ./output/implauncher.exe
@@ -30,14 +35,24 @@ echo "-----------------------------------------------------------"
 echo "[+] Creating .jar from application .class files..."
 jar cvfm ./output/implauncher.jar manifest.txt -C ./build . -C . ./implauncher-data
 chmod +x ./output/implauncher.jar
+echo "[+] Output: ./output/implauncher.jar"
 echo "-----------------------------------------------------------"
 echo "[+] Creating application .exe launcher..."
 ./bin/launch4j/launch4j ./config.l4j
+echo "[+] Output: ./output/implauncher.exe"
 echo "-----------------------------------------------------------"
 echo "[+] Cleanup temp files and directories..."
 rm -f -R ./build
 rm -f -R ./build-updater
 echo "-----------------------------------------------------------"
+if type "7z" > /dev/null; then
+    echo "[+] Archiving..."
+    7z a -t7z ./output/implauncher-$version.7z ./output/implauncher.exe ./output/implauncher.jar
+    echo "[+] Output: ./output/implauncher-$version.7z"
+else
+    echo "[-] '7z' command not found."
+    echo "[?] Run 'apt install p7zip-full'"
+fi
+echo "-----------------------------------------------------------"
 echo "[+] Done!"
-echo "[+] Output: ./output/implauncher.jar"
-echo "[+] Output: ./output/implauncher.exe"
+echo "[+] ImpLauncher version: $version"
