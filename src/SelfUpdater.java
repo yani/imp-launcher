@@ -492,8 +492,13 @@ public class SelfUpdater {
                         JOptionPane.INFORMATION_MESSAGE);
 
                 // Get java bin path
-                final String javaBin = System.getProperty("java.home") + File.separator +
+                String javaBin = System.getProperty("java.home") + File.separator +
                         "bin" + File.separator + "java";
+
+                // Add '.exe' if on windows
+                if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                    javaBin += ".exe";
+                }
 
                 // Create .jar start command
                 final ArrayList<String> command = new ArrayList<String>();
