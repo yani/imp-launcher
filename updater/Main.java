@@ -74,7 +74,7 @@ public class Main {
             // Make sure it's executable
             newJar.setExecutable(true);
 
-            // Update the .exe wrapper
+            // Remove the old .exe wrapper
             if (originalExe.exists() && newExe.exists()) {
                 if (!originalExe.delete()) {
                     JOptionPane.showMessageDialog(null,
@@ -84,7 +84,10 @@ public class Main {
                             JOptionPane.ERROR_MESSAGE);
                     System.exit(1);
                 }
+            }
 
+            // Update the .exe wrapper
+            if (newExe.exists()) {
                 if (!newExe.renameTo(originalExe)) {
                     JOptionPane.showMessageDialog(null,
                             "Something went wrong with the update..." +
@@ -93,7 +96,6 @@ public class Main {
                             JOptionPane.ERROR_MESSAGE);
                     System.exit(1);
                 }
-
             }
 
             // Get java bin path
