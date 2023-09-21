@@ -6,6 +6,7 @@ echo "-----------------------------------------------------------"
 echo "[+] Removing previously created files..."
 rm -f ./output/implauncher.jar
 rm -f ./output/implauncher.exe
+rm -f ./output/implauncher-*.zip
 rm -f ./output/implauncher-updater.jar
 rm -f -R ./build
 rm -f -R ./build-updater
