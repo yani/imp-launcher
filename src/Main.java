@@ -44,7 +44,11 @@ public class Main extends JFrame {
         // Set theme defaults
         Theme.setupTheme();
 
-        // Make sure the required HttpClient is found
+        // Make sure the required HttpClient is found.
+        // This check should happen before the GUI is shown because showing the GUI
+        // could give the user the wrong idea that the tool might correctly work even if
+        // this check fails. The java.net.http library is added in Java 11, but there's
+        // some people that still use Java 8.
         if (!Main.javaClassExists("java.net.http.HttpClient")) {
             JOptionPane.showMessageDialog(null,
                     "The correct HttpClient library can not be found!"
