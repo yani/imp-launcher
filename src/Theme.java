@@ -35,7 +35,8 @@ public class Theme {
             UIManager.put("Button.background", new Color(32, 32, 32));
             UIManager.put("Button.foreground", Color.WHITE);
             UIManager.put("Button.disabledText", new Color(100, 100, 100));
-            UIManager.put("Button.border", new ColorUIResource(new Color(0, 0, 0, 0)));
+            UIManager.put("Button.border",
+                    BorderFactory.createLineBorder(new ColorUIResource(new Color(0, 0, 0, 0)), 7));
             UIManager.put("Button.focus", new ColorUIResource(new Color(0, 0, 0, 0)));
             UIManager.put("Button.highlight", new ColorUIResource(new Color(0, 0, 0, 0)));
 
