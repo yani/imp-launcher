@@ -12,8 +12,8 @@
     <errTitle>ImpLauncher Error</errTitle>
     <messages>
         <startupErr>ImpLauncher failed to start.</startupErr>
-        <jreNotFoundErr>This application requires a Java Runtime Environment of version 1.8.0 or higher. Press OK to go to the download page for an open-source Java alternative called Eclipse Temurin (OpenJDK).</jreNotFoundErr>
-        <jreVersionErr>This application requires a Java Runtime Environment of version 1.8.0 or higher. Press OK to go to the download page for an open-source Java alternative called Eclipse Temurin (OpenJDK). 
+        <jreNotFoundErr>This application requires a Java Runtime Environment of version 1.8.0 or higher. Press OK to go to the download page for an open-source Java alternative called OpenJDK (Eclipse Temurin).</jreNotFoundErr>
+        <jreVersionErr>This application requires a Java Runtime Environment of version 1.8.0 or higher. Press OK to go to the download page for an open-source Java alternative called OpenJDK (Eclipse Temurin). 
         
         Minimum required version: </jreVersionErr>
         <launcherErr>ImpLauncher failed to launch.</launcherErr>
