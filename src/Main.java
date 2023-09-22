@@ -216,7 +216,7 @@ public class Main extends JFrame {
         if (!Desktop.isDesktopSupported()) {
             JOptionPane.showMessageDialog(this, "This desktop is not supported", "ImpLauncher Error",
                     JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
+            System.exit(ERROR);
             return;
         }
 
