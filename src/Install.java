@@ -385,14 +385,19 @@ public class Install extends JDialog {
         // Re-run app startup stuff
         Main.main.appStartup();
 
-        // Show message and ask to open settings panel
+        // Ask to use suggested settings
         int openSettingsResult = JOptionPane.showConfirmDialog(this.mainWindow,
-                "Installation successful!\n\nDo you want to use the suggested ImpLauncher settings for KeeperFX?",
-                "KeeperFX Installation", JOptionPane.YES_NO_OPTION,
-                JOptionPane.INFORMATION_MESSAGE);
+                "Do you want to use the suggested ImpLauncher settings for KeeperFX?",
+                "KeeperFX Installation", JOptionPane.YES_NO_OPTION);
         if (openSettingsResult == JOptionPane.YES_OPTION) {
             SettingsSuggestion.change();
         }
+
+        // Show Success message
+        JOptionPane.showMessageDialog(this.mainWindow,
+                "Installation successful!",
+                "KeeperFX Installation",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public boolean installUsingGOG(File dkRootDir) {
