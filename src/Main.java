@@ -46,9 +46,14 @@ public class Main extends JFrame {
 
         // Make sure the required HttpClient is found
         if (!Main.javaClassExists("java.net.http.HttpClient")) {
-            JOptionPane.showMessageDialog(null, "The HttpClient Java library can not be found.",
+            JOptionPane.showMessageDialog(null,
+                    "The correct HttpClient library can not be found!"
+                            + "\n\nThis can happen when you have an unsupported\nversion of Oracle Java installed."
+                            + "\n\nIn most cases updating your Java installation\nto OpenJDK will fix this problem."
+                            + "\n\nPress OK to go to the download page for OpenJDK (Eclipse Temurin).",
                     "ImpLauncher Error",
                     JOptionPane.ERROR_MESSAGE);
+            Main.openBrowserURL("https://adoptium.net/");
             System.exit(ERROR);
         }
 
