@@ -44,6 +44,14 @@ public class Main extends JFrame {
         // Set theme defaults
         Theme.setupTheme();
 
+        // Make sure the required HttpClient is found
+        if (!Main.javaClassExists("java.net.http.HttpClient")) {
+            JOptionPane.showMessageDialog(null, "The HttpClient Java library can not be found.",
+                    "ImpLauncher Error",
+                    JOptionPane.ERROR_MESSAGE);
+            System.exit(ERROR);
+        }
+
         // Create Main GUI
         Main.main = new Main();
 
@@ -546,5 +554,14 @@ public class Main extends JFrame {
         Main.versionLabel.repaint();
         Main.versionLabel.getParent().repaint();
         Main.versionLabel.getParent().getParent().repaint();
+    }
+
+    public static boolean javaClassExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
