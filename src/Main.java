@@ -44,16 +44,32 @@ public class Main extends JFrame {
         // Set theme defaults
         Theme.setupTheme();
 
-        // Make sure the required HttpClient is found.
+        // Get the Java version
+        String javaVersion = System.getProperty("java.version");
+        int javaMajorVersion = Integer.parseInt(javaVersion.split("\\.")[0]);
+
+        // Make sure that Java 11 is used
         // This check should happen before the GUI is shown because showing the GUI
         // could give the user the wrong idea that the tool might correctly work even if
         // this check fails. The java.net.http library is added in Java 11, but there's
         // some people that still use Java 8.
+        if (javaMajorVersion < 11) {
+            JOptionPane.showMessageDialog(null,
+                    "This program requires Java 11 or higher."
+                            + "\n\nIn most cases updating your Java installation\nto the latest version of OpenJDK will fix this problem."
+                            + "\n\nPress OK to go to the download page for OpenJDK (Eclipse Temurin).",
+                    "ImpLauncher Error",
+                    JOptionPane.ERROR_MESSAGE);
+            Main.openBrowserURL("https://adoptium.net/");
+            System.exit(ERROR);
+        }
+
+        // Make sure the required HttpClient is found.
         if (!Main.javaClassExists("java.net.http.HttpClient")) {
             JOptionPane.showMessageDialog(null,
                     "The correct HttpClient library can not be found!"
                             + "\n\nThis can happen when you have an unsupported\nversion of Oracle Java installed."
-                            + "\n\nIn most cases updating your Java installation\nto OpenJDK will fix this problem."
+                            + "\n\nIn most cases updating your Java installation\nto the latest version of OpenJDK will fix this problem."
                             + "\n\nPress OK to go to the download page for OpenJDK (Eclipse Temurin).",
                     "ImpLauncher Error",
                     JOptionPane.ERROR_MESSAGE);
