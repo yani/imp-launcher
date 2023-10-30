@@ -30,6 +30,7 @@ public class Settings extends JDialog {
     private JCheckBox cheatsCheckBox;
     private JCheckBox censorCheckBox;
     private JComboBox<String> screenshotsDropdown;
+    private JTextField gameTurnsPerSecond;
 
     // Graphics
     private JComboBox<String> resolutionDropdown;
@@ -65,6 +66,7 @@ public class Settings extends JDialog {
         cheatsCheckBox = new JCheckBox("Enabled", Main.runOptions.getOption("alex") != null);
         censorCheckBox = new JCheckBox("Enabled", ((String) Main.keeperFxCfg.getProperty("CENSORSHIP")).equals("ON"));
         screenshotsDropdown = Screenshots.createComboBox(Main.keeperFxCfg.getProperty("SCREENSHOT"));
+        gameTurnsPerSecond = new JTextField((String) Main.runOptions.getOption("fps", "20"), 20);
 
         // Input
         mouseSensitivityField = new JTextField(Main.keeperFxCfg.getProperty("POINTER_SENSITIVITY"), 20);
@@ -213,6 +215,7 @@ public class Settings extends JDialog {
         panel.add(this.createSettingOption("Cheats", this.cheatsCheckBox, true));
         panel.add(this.createSettingOption("Censorship", this.censorCheckBox, false));
         panel.add(this.createSettingOption("Screenshot type", this.screenshotsDropdown, false));
+        panel.add(this.createSettingOption("Game turns per Second", this.gameTurnsPerSecond, true));
         return createSettingsPanelContainer(panel);
     }
 
@@ -292,6 +295,7 @@ public class Settings extends JDialog {
         Main.runOptions.toggleOption("alex", this.cheatsCheckBox.isSelected());
         Main.keeperFxCfg.setProperty("CENSORSHIP", this.censorCheckBox.isSelected() ? "ON" : "OFF");
         Main.keeperFxCfg.setProperty("SCREENSHOT", Screenshots.getKey(this.screenshotsDropdown));
+        Main.runOptions.setOption("fps", this.gameTurnsPerSecond.getText());
 
         // GRAPHICS
         String resolutionString = ScreenResolutions.getKey(this.resolutionDropdown)
