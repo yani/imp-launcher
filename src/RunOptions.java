@@ -54,6 +54,15 @@ public class RunOptions {
         this.dataObj.put(argName, var);
     }
 
+    public Object getOption(String argName, Object defaultValue) {
+        Object val = this.getOption(argName);
+        if (val == null) {
+            return defaultValue;
+        } else {
+            return val;
+        }
+    }
+
     public Object getOption(String argName) {
         return this.dataObj.get(argName);
     }
