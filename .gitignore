@@ -1,2 +1,4 @@
 kfx/
 output/
+build/
+build-updater/
