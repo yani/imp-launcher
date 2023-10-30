@@ -62,9 +62,9 @@ public class GameUpdater {
     public void customVersionDownload(String currentSemVerString, KfxReleaseType wantedReleaseType) {
         this.currentSemver = currentSemVerString;
         if (wantedReleaseType == KfxReleaseType.STABLE) {
-            this.checkStable();
+            this.checkStable(false);
         } else if (wantedReleaseType == KfxReleaseType.ALPHA) {
-            this.checkAlpha();
+            this.checkAlpha(false);
         }
     }
 
@@ -100,6 +100,10 @@ public class GameUpdater {
     }
 
     public void checkStable() {
+        this.checkStable(true);
+    }
+
+    public void checkStable(Boolean showSaveGameNotice) {
 
         System.out.println("Checking for Stable update..");
 
@@ -125,11 +129,16 @@ public class GameUpdater {
                     KfxReleaseType.STABLE,
                     this.currentSemver,
                     latestStableSemver,
-                    (String) releaseObj.get("download_url"));
+                    (String) releaseObj.get("download_url"),
+                    showSaveGameNotice);
         }
     }
 
     public void checkAlpha() {
+        this.checkAlpha(true);
+    }
+
+    public void checkAlpha(Boolean showSaveGameNotice) {
 
         System.out.println("Checking for Alpha update..");
 
@@ -156,12 +165,13 @@ public class GameUpdater {
                     KfxReleaseType.ALPHA,
                     this.currentSemver,
                     latestAlphaSemver,
-                    (String) releaseObj.get("download_url"));
+                    (String) releaseObj.get("download_url"),
+                    showSaveGameNotice);
         }
     }
 
     public void showUpdaterUI(KfxReleaseType newReleaseType, String currentSemver, String newSemver,
-            String downloadURL) {
+            String downloadURL, Boolean showSaveGameNotice) {
 
         this.currentReleaseType = Main.kfxReleaseType;
         this.newReleaseType = newReleaseType;
@@ -266,6 +276,19 @@ public class GameUpdater {
         // "Update" button
         updateButton.setPreferredSize(new Dimension(150, 50));
         updateButton.addActionListener(e -> {
+
+            // Show notice that save files might be lost
+            if (showSaveGameNotice) {
+                int shouldContinue = JOptionPane.showConfirmDialog(this.mainWindow,
+                        "Save games might break when updating."
+                                + "\n\nAre you sure you want to update?",
+                        "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE);
+                if (shouldContinue != JOptionPane.YES_OPTION) {
+                    this.dialog.dispose();
+                    return;
+                }
+            }
 
             // Vars for checking if file is locked
             boolean keeperFxFileLocked = false;
