@@ -215,7 +215,7 @@ public class Settings extends JDialog {
         panel.add(this.createSettingOption("Cheats", this.cheatsCheckBox, true));
         panel.add(this.createSettingOption("Censorship", this.censorCheckBox, false));
         panel.add(this.createSettingOption("Screenshot type", this.screenshotsDropdown, false));
-        panel.add(this.createSettingOption("Game turns per Second", this.gameTurnsPerSecond, true));
+        panel.add(this.createSettingOption("Gameturns per second (default = 20)", this.gameTurnsPerSecond, true));
         return createSettingsPanelContainer(panel);
     }
 
