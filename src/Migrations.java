@@ -139,13 +139,13 @@ public class Migrations {
         oldAssets.put("waterplants.zip", "2969497260");
         oldAssets.put("knightstatue.zip", "882673639");
         oldAssets.put("mushrooms.zip", "1499414880");
-        oldAssets.put("druid.zip", "2258624893");
+        // oldAssets.put("druid.zip", "2258624893");
         oldAssets.put("torches.zip", "2900881663");
         oldAssets.put("banner.zip", "2766031992");
         oldAssets.put("lanternpost.zip", "3834956157");
         oldAssets.put("fern.zip", "715435298");
         oldAssets.put("windbanner.zip", "2356471797");
-        oldAssets.put("time_mage.zip", "1770950666");
+        // oldAssets.put("time_mage.zip", "1770950666");
         oldAssets.put("boom_barrel.zip", "1782908367");
         oldAssets.put("gimly.zip", "2299161908");
         oldAssets.put("trapcolors.zip", "2511003861");
