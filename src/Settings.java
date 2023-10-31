@@ -35,6 +35,7 @@ public class Settings extends JDialog {
     // Graphics
     private JComboBox<String> resolutionDropdown;
     private JComboBox<String> displayModeDropdown;
+    private JComboBox<String> displayMonitorDropdown;
     private JCheckBox smoothenVidCheckBox;
 
     // Sound
@@ -88,6 +89,8 @@ public class Settings extends JDialog {
         }
         resolutionDropdown = ScreenResolutions.createComboBox(resolution);
         displayModeDropdown = DisplayModes.createComboBox(displayMode);
+        displayMonitorDropdown = DisplayMonitor
+                .createComboBox((String) Main.keeperFxCfg.getProperty("DISPLAY_NUMBER"));
         smoothenVidCheckBox = new JCheckBox("Enabled", Main.runOptions.getOption("vidsmooth") != null);
 
         // Sound
@@ -223,6 +226,7 @@ public class Settings extends JDialog {
         JPanel panel = createSettingsPanel();
         panel.add(this.createSettingOption("Resolution", this.resolutionDropdown, false));
         panel.add(this.createSettingOption("Display mode", this.displayModeDropdown, false));
+        panel.add(this.createSettingOption("Display monitor", this.displayMonitorDropdown, false));
         panel.add(this.createSettingOption("Smoothen Video", this.smoothenVidCheckBox, true));
         return createSettingsPanelContainer(panel);
     }
@@ -304,6 +308,7 @@ public class Settings extends JDialog {
         Main.keeperFxCfg.setProperty("FRONTEND_RES",
                 resolutionString + " " + resolutionString + " " + resolutionString);
         Main.runOptions.toggleOption("vidsmooth", this.smoothenVidCheckBox.isSelected());
+        Main.keeperFxCfg.setProperty("DISPLAY_NUMBER", DisplayMonitor.getKey(this.displayMonitorDropdown));
 
         // SOUND
         Main.runOptions.toggleOption("nosound", this.soundDisabledCheckBox.isSelected() == false);
