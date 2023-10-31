@@ -81,7 +81,7 @@ public class Migrations {
 
                         String crc32Value = Migrations.getCRC32value(newFile);
                         String requiredCrc32Value = oldAssets.get(filename);
-                        if (!crc32Value.equals(requiredCrc32Value)) {
+                        if (!crc32Value.equals(requiredCrc32Value) && !crc32Value.equals("3960707929")) {
                             continue;
                         }
 
