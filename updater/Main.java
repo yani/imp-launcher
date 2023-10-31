@@ -98,6 +98,16 @@ public class Main {
                 }
             }
 
+            // Set executable bit when not on Windows
+            try {
+                if (System.getProperty("os.name").toLowerCase().contains("windows") == false) {
+                    ProcessBuilder processBuilder = new ProcessBuilder("chmod +x " + originalJar.getAbsolutePath());
+                    Process process = processBuilder.start();
+                    process.waitFor();
+                }
+            } catch (Exception ex) {
+            }
+
             // Get java bin path
             final String javaBin = System.getProperty("java.home") + File.separator +
                     "bin" + File.separator + "java";
