@@ -83,9 +83,6 @@ public class Main extends JFrame {
         // Load launcher root dir variable
         Main.loadLauncherRootDir();
 
-        // Run migrations
-        Migrations.run();
-
         // Run startup checks
         Main.main.appStartup();
 
@@ -244,6 +241,9 @@ public class Main extends JFrame {
     }
 
     public void appStartup() {
+
+        // Run migrations
+        Migrations.run();
 
         // Make sure this desktop is supported so commands can be ran
         if (!Desktop.isDesktopSupported()) {
