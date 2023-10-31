@@ -124,31 +124,38 @@ public class Migrations {
         Map<String, String> reBundledAssets = new HashMap<String, String>();
 
         reBundledAssets.put("creatures.zip", "2109114875");
-        reBundledAssets.put("trapsdoors.zip", "1081330644");
         reBundledAssets.put("decorative_objects.zip", "2818188277");
         reBundledAssets.put("natural_features.zip", "4122517959");
+        reBundledAssets.put("trapsdoors.zip", "1081330644");
 
         return reBundledAssets;
     }
 
     public static Map<String, String> getOldAssets() {
+
         Map<String, String> oldAssets = new HashMap<String, String>();
-        oldAssets.put("goldenarmor.zip", "984811839");
-        oldAssets.put("whiteflag.zip", "3473430213");
-        oldAssets.put("gemtraps.zip", "3458436481");
-        oldAssets.put("waterplants.zip", "2969497260");
-        oldAssets.put("knightstatue.zip", "882673639");
-        oldAssets.put("mushrooms.zip", "1499414880");
-        // oldAssets.put("druid.zip", "2258624893");
-        oldAssets.put("torches.zip", "2900881663");
+
         oldAssets.put("banner.zip", "2766031992");
-        oldAssets.put("lanternpost.zip", "3834956157");
-        oldAssets.put("fern.zip", "715435298");
-        oldAssets.put("windbanner.zip", "2356471797");
-        // oldAssets.put("time_mage.zip", "1770950666");
         oldAssets.put("boom_barrel.zip", "1782908367");
+        oldAssets.put("fern.zip", "715435298");
+        oldAssets.put("gemtraps.zip", "3458436481");
         oldAssets.put("gimly.zip", "2299161908");
+        oldAssets.put("goldenarmor.zip", "984811839");
+        oldAssets.put("knightstatue.zip", "882673639");
+        oldAssets.put("lanternpost.zip", "3834956157");
+        oldAssets.put("mushrooms.zip", "1499414880");
+        oldAssets.put("torches.zip", "2900881663");
         oldAssets.put("trapcolors.zip", "2511003861");
+        oldAssets.put("waterplants.zip", "2969497260");
+        oldAssets.put("whiteflag.zip", "3473430213");
+        oldAssets.put("windbanner.zip", "2356471797");
+
+        // Druid and Time Mage should not be removed,
+        // as they are not part of the current creatures.zip
+
+        // oldAssets.put("time_mage.zip", "1770950666");
+        // oldAssets.put("druid.zip", "2258624893");
+
         return oldAssets;
     }
 
