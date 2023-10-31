@@ -19,7 +19,7 @@ public class Main extends JFrame {
 
     public static Main main;
 
-    public static String impLauncherVersion = "0.6.1";
+    public static String impLauncherVersion = "0.6.2";
 
     public static String launcherRootDir;
 
