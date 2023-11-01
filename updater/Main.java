@@ -101,7 +101,7 @@ public class Main {
             // Set executable bit when not on Windows
             try {
                 if (System.getProperty("os.name").toLowerCase().contains("windows") == false) {
-                    ProcessBuilder processBuilder = new ProcessBuilder("chmod +x " + originalJar.getAbsolutePath());
+                    ProcessBuilder processBuilder = new ProcessBuilder("chmod 774 " + originalJar.getAbsolutePath());
                     Process process = processBuilder.start();
                     process.waitFor();
                 }
