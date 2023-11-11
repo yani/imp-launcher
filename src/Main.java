@@ -46,7 +46,7 @@ public class Main extends JFrame {
 
         // Get the Java version
         String javaVersion = System.getProperty("java.version");
-        int javaMajorVersion = Integer.parseInt(javaVersion.split("\\.")[0]);
+        int javaMajorVersion = Integer.parseInt(javaVersion.split("[\\.\\-]")[0]);
 
         // Make sure that Java 11 is used
         // This check should happen before the GUI is shown because showing the GUI
