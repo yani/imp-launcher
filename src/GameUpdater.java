@@ -1,6 +1,12 @@
 package src;
 
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
@@ -9,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -19,8 +27,15 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -29,6 +44,7 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
 
 import org.json.simple.*;
 import org.rauschig.jarchivelib.ArchiveEntry;
+import org.rauschig.jarchivelib.ArchiveFormat;
 import org.rauschig.jarchivelib.ArchiveStream;
 import org.rauschig.jarchivelib.Archiver;
 import org.rauschig.jarchivelib.ArchiverFactory;
@@ -47,6 +63,7 @@ public class GameUpdater {
     String downloadURL;
 
     Thread updateThread;
+    Thread archiveThread;
     public static boolean cfgHasUpdated = false;
 
     JButton updateButton = GuiUtil.createDefaultButton("Update");
@@ -78,8 +95,8 @@ public class GameUpdater {
 
         Matcher m = pattern.matcher(Main.kfxVersion);
         if (m.matches()) {
-            // this.currentSemver = m.group(1) + "-unique";
-            this.currentSemver = m.group(1);
+            this.currentSemver = m.group(1) + "-unique";
+            // this.currentSemver = m.group(1);
         }
 
         if (this.currentSemver == null) {
@@ -194,6 +211,10 @@ public class GameUpdater {
                     updateThread.interrupt();
                     updateThread = null;
                 }
+                if (archiveThread != null) {
+                    archiveThread.interrupt();
+                    archiveThread = null;
+                }
             }
         });
 
@@ -277,19 +298,6 @@ public class GameUpdater {
         updateButton.setPreferredSize(new Dimension(150, 50));
         updateButton.addActionListener(e -> {
 
-            // Show notice that save files might be lost
-            if (showSaveGameNotice) {
-                int shouldContinue = JOptionPane.showConfirmDialog(this.mainWindow,
-                        "Save games might break when updating."
-                                + "\n\nAre you sure you want to update?",
-                        "ImpLauncher - KeeperFX", JOptionPane.YES_NO_OPTION,
-                        JOptionPane.INFORMATION_MESSAGE);
-                if (shouldContinue != JOptionPane.YES_OPTION) {
-                    this.dialog.dispose();
-                    return;
-                }
-            }
-
             // Vars for checking if file is locked
             boolean keeperFxFileLocked = false;
             File keeperFxFile = new File(Main.launcherRootDir + File.separator + "keeperfx.exe");
@@ -345,8 +353,125 @@ public class GameUpdater {
                 return;
             }
 
-            this.updateThread = this.createUpdateThread();
-            this.updateThread.start();
+            // Show notice that save files might be lost
+            if (showSaveGameNotice) {
+
+                // Ask if user wants to backup their save files
+                String[] options = { "Yes", "No", "Cancel" };
+                int selectedOption = JOptionPane.showOptionDialog(
+                        this.mainWindow,
+                        "Save games might break when updating."
+                                + "\n\nDo you want to backup any existing save games?",
+                        "ImpLauncher - KeeperFX", // Dialog title
+                        JOptionPane.DEFAULT_OPTION, // Option type (DEFAULT_OPTION for OK/Cancel)
+                        JOptionPane.INFORMATION_MESSAGE, // Message type (PLAIN_MESSAGE for informational message)
+                        null,
+                        options,
+                        options[0] // Default option (Stable)
+                );
+
+                // Check the selected option and take action accordingly
+                if (selectedOption == JOptionPane.CLOSED_OPTION || options[selectedOption].equals("Cancel")) {
+                    this.dialog.dispose();
+                    return;
+                }
+
+                System.out.println("Selected option: " + options[selectedOption]);
+
+                // Check if user wants to backup their save files
+                if (options[selectedOption].equals("Yes")) {
+
+                    this.archiveThread = new Thread(() -> {
+
+                        this.updateStatusLabel("Starting save backup process...");
+
+                        File savesDir = new File(Main.launcherRootDir + File.separator + "save");
+                        File backupDir = new File(
+                                Main.launcherRootDir + File.separator + "save" + File.separator + "backup");
+
+                        // Make sure 'save' dir exists
+                        if (!savesDir.exists()) {
+                            JOptionPane.showMessageDialog(this.mainWindow,
+                                    "'/save' directory not found",
+                                    "Updater failure",
+                                    JOptionPane.ERROR_MESSAGE);
+                            this.updateStatusLabel("/save' directory not found");
+                            return;
+                        }
+
+                        // Check if we need to create 'saves/backup' dir
+                        if (!backupDir.exists()) {
+                            this.updateStatusLabel("Making saves backup dir...");
+                            if (!backupDir.mkdir()) {
+                                JOptionPane.showMessageDialog(this.mainWindow,
+                                        "Failed creating '/save/backup' directory",
+                                        "Updater failure",
+                                        JOptionPane.ERROR_MESSAGE);
+                                this.updateStatusLabel("Failed creating '/save/backup' directory");
+                                return;
+                            }
+                        }
+
+                        // Figure out save files to archive
+                        this.updateStatusLabel("Figuring out what files need to be included in save backup...");
+
+                        // Get files to be archived
+                        String[] saveFileNames = { "fx1*.sav", "scr_*.dat", "settings.dat" };
+                        File[] matchingFiles = GameUpdater.getMatchingFiles(savesDir, saveFileNames);
+
+                        if (matchingFiles.length > 0) {
+                            this.updateStatusLabel("Archiving save files...");
+
+                            // Create name for archive
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+                            String timestamp = dateFormat.format(new Date());
+                            String backupFileName = "keeperfx-save-backup_" + timestamp;
+
+                            // Remove backup file if it already exists
+                            File backupFile = new File(Main.launcherRootDir + File.separator + "save" + File.separator
+                                    + "backup" + File.separator + backupFileName);
+                            if (backupFile.exists()) {
+                                backupFile.delete();
+                            }
+
+                            // Archive service
+                            Archiver archiver = ArchiverFactory.createArchiver(ArchiveFormat.SEVEN_Z);
+
+                            // Create archive with save files
+                            try {
+                                File archive = archiver.create(backupFileName, backupDir, matchingFiles);
+                                this.updateStatusLabel("Save files archived...");
+                            } catch (Exception ex) {
+
+                                JOptionPane.showMessageDialog(this.mainWindow,
+                                        "Failed archiving the save files.",
+                                        "Updater failure",
+                                        JOptionPane.ERROR_MESSAGE);
+                                this.updateStatusLabel("Failed archiving the save files");
+                                return;
+                            }
+                        } else {
+                            this.updateStatusLabel("Nothing to backup");
+                        }
+
+                        if (this.shouldCancel != true) {
+                            // Start update thread
+                            this.updateThread = this.createUpdateThread();
+                            this.updateThread.start();
+                        }
+
+                    });
+
+                    this.archiveThread.start();
+                }
+
+            } else {
+
+                // Start update thread
+                this.updateThread = this.createUpdateThread();
+                this.updateThread.start();
+            }
+
         });
         updateButton.setEnabled(true);
         bottomPanel.add(updateButton, BorderLayout.PAGE_END);
@@ -675,4 +800,24 @@ public class GameUpdater {
         });
     }
 
+    private static File[] getMatchingFiles(File directory, String[] fileNames) {
+        List<File> matchingFilesList = new ArrayList<>();
+
+        for (String fileName : fileNames) {
+            // Create a FilenameFilter for the current wildcard pattern
+            String regex = fileName.replace(".", "\\.").replace("*", ".*");
+            FilenameFilter filenameFilter = (dir, name) -> name.matches(regex);
+
+            // List files using the directory and the FilenameFilter
+            File[] matchingFiles = directory.listFiles(filenameFilter);
+
+            if (matchingFiles != null) {
+                // Add matching files to the result list
+                matchingFilesList.addAll(Arrays.asList(matchingFiles));
+            }
+        }
+
+        // Convert the list to an array
+        return matchingFilesList.toArray(new File[0]);
+    }
 }
