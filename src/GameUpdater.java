@@ -91,12 +91,22 @@ public class GameUpdater {
 
     public void checkForUpdates(KfxReleaseType wantedKfxReleaseType) {
 
-        Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*).*");
+        Pattern pattern1 = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*).*");
 
-        Matcher m = pattern.matcher(Main.kfxVersion);
-        if (m.matches()) {
+        Matcher matcher1 = pattern1.matcher(Main.kfxVersion);
+        if (matcher1.matches()) {
             // this.currentSemver = m.group(1) + "-unique";
-            this.currentSemver = m.group(1);
+            this.currentSemver = matcher1.group(1);
+        }
+
+        if (this.currentSemver == null) {
+
+            Pattern pattern2 = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*");
+            Matcher matcher2 = pattern2.matcher(Main.kfxVersion);
+            if (matcher2.matches()) {
+                // this.currentSemver = m.group(1) + "-unique";
+                this.currentSemver = matcher2.group(1);
+            }
         }
 
         if (this.currentSemver == null) {
@@ -129,14 +139,17 @@ public class GameUpdater {
 
         String releaseName = (String) releaseObj.get("name");
 
-        Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*?Build ([0-9]*)");
+        // Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*?Build
+        // ([0-9]*)");
+        Pattern pattern = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*?");
         Matcher m = pattern.matcher(releaseName);
         if (!m.matches()) {
             System.out.println("Unable to grab latest KeeperFX.net stable version. Unable to get version from 'name'.");
             return;
         }
 
-        String latestStableSemver = m.group(1) + "." + m.group(2);
+        // String latestStableSemver = m.group(1) + "." + m.group(2);
+        String latestStableSemver = m.group(1);
         System.out.println("Latest KeeperFX.net stable version: " + latestStableSemver);
 
         // New version!
