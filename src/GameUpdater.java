@@ -95,8 +95,8 @@ public class GameUpdater {
 
         Matcher m = pattern.matcher(Main.kfxVersion);
         if (m.matches()) {
-            this.currentSemver = m.group(1) + "-unique";
-            // this.currentSemver = m.group(1);
+            // this.currentSemver = m.group(1) + "-unique";
+            this.currentSemver = m.group(1);
         }
 
         if (this.currentSemver == null) {
