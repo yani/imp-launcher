@@ -476,14 +476,14 @@ public class GameUpdater {
                     });
 
                     this.archiveThread.start();
+                    return;
                 }
 
-            } else {
-
-                // Start update thread
-                this.updateThread = this.createUpdateThread();
-                this.updateThread.start();
             }
+
+            // Start update thread
+            this.updateThread = this.createUpdateThread();
+            this.updateThread.start();
 
         });
         updateButton.setEnabled(true);
