@@ -675,34 +675,37 @@ public class GameUpdater {
                 // Create archiver to extract the file
                 File archive = new File(tempFilePath.toString());
                 Archiver archiver = ArchiverFactory.createArchiver(archive);
-                ArchiveEntry entry;
 
                 // Count the number of files in the archive for the progress bar
                 int totalArchiveFileCount = 0;
 
                 // Check if this is a known archive
                 if (fileName.equals("keeperfx_0_5_0b_complete.7z")) {
-                    System.out.println("This is a known download, so we will not count the files");
                     totalArchiveFileCount = 7739;
+                }
+                if (fileName.equals("keeperfx_1_0_0_complete.7z")) {
+                    totalArchiveFileCount = 5122;
                 }
 
                 // Count files
                 if (totalArchiveFileCount == 0) {
                     ArchiveStream countStream = archiver.stream(archive);
-                    while ((entry = countStream.getNextEntry()) != null) {
+                    while (countStream.getNextEntry() != null) {
                         totalArchiveFileCount++;
                         this.updateStatusLabel("Counting files for extraction: " + totalArchiveFileCount);
                     }
+                    countStream.close();
                 }
 
                 System.out.println("Total files: " + totalArchiveFileCount);
 
                 // Create archive stream
                 ArchiveStream stream = archiver.stream(archive);
+                ArchiveEntry entry;
                 File entryOutputFile;
                 String fileSubPath;
 
-                // Extract each file"
+                // Extract each file
                 int currentFileNumber = 1;
                 while ((entry = stream.getNextEntry()) != null) {
 
@@ -743,7 +746,7 @@ public class GameUpdater {
                         entryOutputFile.delete();
                     }
 
-                    // // Extract current file
+                    // Extract current file
                     entry.extract(new File(Main.launcherRootDir));
 
                     currentFileNumber++;
