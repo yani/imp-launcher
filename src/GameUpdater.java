@@ -209,6 +209,13 @@ public class GameUpdater {
         this.newSemver = newSemver;
         this.downloadURL = downloadURL;
 
+        // Change download to a 7z archive without the BCJ2 filter if it's the 1.0.0
+        // release. We do this because the libraries we use have no support for BCJ2.
+        if (this.downloadURL
+                .equals("https://github.com/dkfans/keeperfx/releases/download/v1.0.0/keeperfx_1_0_0_complete.7z")) {
+            this.downloadURL = "https://keeperfx.net/uploads/keeperfx-1.0.0-complete-no-bcj2.7z";
+        }
+
         // Create update dialog
         this.dialog.setTitle("KeeperFX updater");
         this.dialog.getContentPane().setBackground(new Color(50, 50, 50));
@@ -576,7 +583,7 @@ public class GameUpdater {
             // Start update
             try {
 
-                this.updateStatusLabel("Checking for download...");
+                this.updateStatusLabel("Checking for download... (this can take a while...)");
 
                 // Create HttpClient
                 HttpClient client = HttpClient.newBuilder()
