@@ -24,14 +24,16 @@ echo "[+] Creating .jar from updater .class files..."
 jar cvfe ./build/self-updater/implauncher-updater.jar updater.Main -C ./build-updater .
 echo "-----------------------------------------------------------"
 echo "[+] Copying library code into main build directory..."
-unzip -o ./lib/jarchivelib-0.7.1-jar-with-dependencies.jar -d ./build
+unzip -o ./lib/xz-1.9.jar -d ./build
+unzip -o ./lib/commons-compress-1.25.0.jar -d ./build
+unzip -o ./lib/jarchivelib-1.2.0.jar -d ./build
 unzip -o ./lib/json-simple-1.1.1.jar -d ./build
 unzip -o ./lib/pecoff4j-0.4.0.jar -d ./build
 unzip -o ./lib/semver4j-5.1.0.jar -d ./build
 rm -f ./build/META-INF/MANIFEST.MF
 echo "-----------------------------------------------------------"
 echo "[+] Compiling application..."
-javac -d ./build -cp lib/jarchivelib-0.7.1-jar-with-dependencies.jar:lib/json-simple-1.1.1.jar:lib/pecoff4j-0.4.0.jar:lib/semver4j-5.1.0.jar -g:none -source 1.8 -target 1.8 ./src/*.java ./src/Setting/*.java
+javac -d ./build -cp lib/xz-1.9.jar:lib/commons-compress-1.25.0.jar:lib/jarchivelib-1.2.0.jar:lib/json-simple-1.1.1.jar:lib/pecoff4j-0.4.0.jar:lib/semver4j-5.1.0.jar -g:none -source 1.8 -target 1.8 ./src/*.java ./src/Setting/*.java
 echo "-----------------------------------------------------------"
 echo "[+] Creating .jar from application .class files..."
 jar cvfm ./output/implauncher.jar manifest.txt -C ./build . -C . ./implauncher-data
@@ -51,6 +53,7 @@ if type "zip" > /dev/null; then
     rm -f ./output/implauncher-$version.zip
     echo "[+] Archiving..."
     zip -j ./output/implauncher-$version.zip ./output/implauncher.exe ./output/implauncher.jar
+    echo "[+] Output folder: ./output"
     echo "[+] Output: ./output/implauncher-$version.zip"
 else
     echo "[-] 'zip' command not found. (Install with 'apt install zip')"
