@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -415,13 +417,29 @@ public class Main extends JFrame {
         }
 
         try {
+
             // Get version of KeeperFX
             Main.kfxVersion = EXEFileInfo.getFileVersion(Main.launcherRootDir + File.separator + "keeperfx.exe");
 
-            // Remove semver from prototype builds
+            // Determine type of KeeperFX release
             if (Main.kfxVersion.contains("Prototype")) {
-                Main.kfxVersion = "Prototype "
-                        + Main.kfxVersion.substring(Main.kfxVersion.lastIndexOf("_") + 1);
+                Main.kfxReleaseType = KfxReleaseType.PROTOTYPE;
+
+                // Remove semver from prototype builds
+                Main.kfxVersion = "Prototype " + Main.kfxVersion.substring(Main.kfxVersion.lastIndexOf("_") + 1);
+
+            } else if (Main.kfxVersion.contains("Alpha")) {
+                Main.kfxReleaseType = KfxReleaseType.ALPHA;
+
+            } else {
+                Main.kfxReleaseType = KfxReleaseType.STABLE;
+
+                // Get normalized semver for stable release
+                Pattern pattern2 = Pattern.compile(".*?([0-9]*\\.[0-9]*\\.[0-9]*).*");
+                Matcher matcher2 = pattern2.matcher(Main.kfxVersion);
+                if (matcher2.matches()) {
+                    Main.kfxVersion = matcher2.group(1);
+                }
             }
 
         } catch (Exception ex) {
@@ -430,15 +448,6 @@ public class Main extends JFrame {
                     "ImpLauncher Error",
                     JOptionPane.WARNING_MESSAGE);
             System.exit(ERROR);
-        }
-
-        // Define KeeperFX version
-        if (Main.kfxVersion.contains("Prototype")) {
-            Main.kfxReleaseType = KfxReleaseType.PROTOTYPE;
-        } else if (Main.kfxVersion.contains("Alpha")) {
-            Main.kfxReleaseType = KfxReleaseType.ALPHA;
-        } else {
-            Main.kfxReleaseType = KfxReleaseType.STABLE;
         }
 
         // Update thread
