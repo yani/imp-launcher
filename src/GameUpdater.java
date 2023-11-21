@@ -690,7 +690,8 @@ public class GameUpdater {
                 if (fileName.equals("keeperfx_0_5_0b_complete.7z")) {
                     totalArchiveFileCount = 7739;
                 }
-                if (fileName.equals("keeperfx_1_0_0_complete.7z")) {
+                if (fileName.equals("keeperfx_1_0_0_complete.7z")
+                        || fileName.equals("keeperfx-1.0.0-complete-no-bcj2.7z ")) {
                     totalArchiveFileCount = 5122;
                 }
 
