@@ -595,11 +595,15 @@ public class Install extends JDialog {
                 // Windows
                 "C:\\GOG Games\\Dungeon Keeper Gold",
                 "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Dungeon Keeper Gold",
+                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\Data",
+                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\DATA",
                 "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper",
 
                 // Linux
                 userHome + "/.wine/drive_c/GOG Games/Dungeon Keeper Gold",
                 userHome + "/.wine/drive_c/Program Files (x86)/GOG Galaxy/Games/Dungeon Keeper Gold",
+                userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper/Data",
+                userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper/DATA",
                 userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper",
                 userHome + "/.steam/steam/steamapps/common/Dungeon Keeper",
                 userHome + "/Games/dungeon-keeper/drive_c/KeeperFX", // A Common Lutris location
