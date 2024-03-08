@@ -97,6 +97,7 @@ public class Install extends JDialog {
             try {
                 JFileChooser fileChooser = new JFileChooser("");
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                fileChooser.setFileHidingEnabled(false);
                 int returnVal = fileChooser.showOpenDialog(this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     String installSourcePath = fileChooser.getSelectedFile().getAbsolutePath();
@@ -232,6 +233,15 @@ public class Install extends JDialog {
             }
         }
 
+        // Check for Steam
+        if (installType == null) {
+            File gogFile = new File(dkDir.getPath() + "/SAVE/steam_autocloud.vdf");
+            if (gogFile.exists()) {
+                installType = InstallType.STEAM;
+                this.printOutput("'SAVE/steam_autocloud.vdg' file found");
+            }
+        }
+
         // Check for a manual installation
         // This also works for the common Lutris install script
         if (installType == null) {
@@ -310,6 +320,11 @@ public class Install extends JDialog {
             installResult = this.installUsingGOG(dkDir);
         }
 
+        // Handle Steam installation
+        if (installType == InstallType.STEAM) {
+            installResult = this.installUsingSteam(dkDir);
+        }
+
         // Handle KFX installation
         // Uses a pre-existing KFX installation (mostly for power users)
         if (installType == InstallType.KFX) {
@@ -348,15 +363,21 @@ public class Install extends JDialog {
             }
 
             if (installType != InstallType.CD) {
+
                 // Handle GOG music
                 if (installType == InstallType.GOG) {
-                    copyMusicResult = this.copyMusicFromGOG(dkDir);
+                    copyMusicResult = this.copyOggMusicFromDir(dkDir);
+                }
+
+                // Handle Steam music
+                if (installType == InstallType.STEAM) {
+                    copyMusicResult = this.copyOggMusicFromDir(dkDir);
                 }
 
                 // Handle KFX music
                 // Uses a pre-existing KFX installation (mostly for power users)
                 if (installType == InstallType.KFX) {
-                    copyMusicResult = this.copyMusicFromKFX(dkDir);
+                    copyMusicResult = this.copyOggMusicFromDir(new File(dkDir.getPath() + File.separator + "music"));
                 }
 
                 if (copyMusicResult == false) {
@@ -407,6 +428,10 @@ public class Install extends JDialog {
         return this.installDefault(dkRootDir, InstallFiles.gogFiles);
     }
 
+    public boolean installUsingSteam(File dkRootDir) {
+        return this.installDefault(dkRootDir, InstallFiles.gogFiles);
+    }
+
     public boolean installUsingCD(File dkRootDir) {
         return this.installDefault(dkRootDir, InstallFiles.cdFiles);
     }
@@ -447,14 +472,6 @@ public class Install extends JDialog {
         }
 
         return true;
-    }
-
-    public boolean copyMusicFromGOG(File dkRootDir) {
-        return this.copyOggMusicFromDir(dkRootDir);
-    }
-
-    public boolean copyMusicFromKFX(File dkRootDir) {
-        return this.copyOggMusicFromDir(new File(dkRootDir.getPath() + File.separator + "music"));
     }
 
     private boolean copyOggMusicFromDir(File musicRootDir) {
@@ -578,12 +595,13 @@ public class Install extends JDialog {
                 // Windows
                 "C:\\GOG Games\\Dungeon Keeper Gold",
                 "C:\\Program Files (x86)\\GOG Galaxy\\Games\\Dungeon Keeper Gold",
-                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper\\Data",
+                "C:\\Program Files (x86)\\Origin Games\\Dungeon Keeper",
 
                 // Linux
                 userHome + "/.wine/drive_c/GOG Games/Dungeon Keeper Gold",
                 userHome + "/.wine/drive_c/Program Files (x86)/GOG Galaxy/Games/Dungeon Keeper Gold",
-                userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper/Data",
+                userHome + "/.wine/drive_c/Program Files (x86)/Origin Games/Dungeon Keeper",
+                userHome + "/.steam/steam/steamapps/common/Dungeon Keeper",
                 userHome + "/Games/dungeon-keeper/drive_c/KeeperFX", // A Common Lutris location
         })) {
 
