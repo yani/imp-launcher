@@ -51,6 +51,8 @@ import org.rauschig.jarchivelib.ArchiverFactory;
 
 public class GameUpdater {
 
+    private GameUpdaterType updateType = GameUpdaterType.UPDATE;
+
     private boolean shouldCancel = false;
 
     JFrame mainWindow;
@@ -66,14 +68,23 @@ public class GameUpdater {
     Thread archiveThread;
     public static boolean cfgHasUpdated = false;
 
-    JButton updateButton = GuiUtil.createDefaultButton("Update");
-    JButton closeButton = GuiUtil.createDefaultButton("Close");
-    JButton cancelButton = GuiUtil.createDefaultButton("Cancel");
-    JProgressBar progressBar = new JProgressBar(0, 100);
-    JLabel statusLabel = new JLabel("<html>Status: Ready</html>");
+    JButton confirmButton;
+    JButton closeButton;
+    JButton cancelButton;
+    JProgressBar progressBar;
+    JLabel statusLabel;
 
-    public GameUpdater(JFrame mainWindow) {
+    public GameUpdater(JFrame mainWindow, GameUpdaterType updateType) {
         this.mainWindow = mainWindow;
+        this.updateType = updateType;
+
+        confirmButton = GuiUtil.createDefaultButton(
+                this.updateType == GameUpdaterType.UPDATE ? "Update" : "Install");
+
+        closeButton = GuiUtil.createDefaultButton("Close");
+        cancelButton = GuiUtil.createDefaultButton("Cancel");
+        progressBar = new JProgressBar(0, 100);
+        statusLabel = new JLabel("<html>Status: Ready</html>");
     }
 
     public void customVersionDownload(String currentSemVerString, KfxReleaseType wantedReleaseType) {
@@ -217,7 +228,9 @@ public class GameUpdater {
         }
 
         // Create update dialog
-        this.dialog.setTitle("KeeperFX updater");
+        this.dialog.setTitle(
+                this.updateType == GameUpdaterType.UPDATE ? "KeeperFX Updater" : "KeeperFX Installer");
+
         this.dialog.getContentPane().setBackground(new Color(50, 50, 50));
         this.dialog.setSize(400, 260);
         this.dialog.setResizable(false);
@@ -261,9 +274,11 @@ public class GameUpdater {
         // Info text at top
         JLabel infoLabel = new JLabel(
                 "<html>" +
-                        "New KeeperFX version available!<br /><br />" +
-                        "Current version: <span style='color:white'>" + currentVersionString + "</span><br />" +
-                        "New version: <span style='color:lime'>" + newVersionString + "</span>" +
+                        (this.updateType == GameUpdaterType.UPDATE ? "New KeeperFX version available!<br /><br />" +
+                                "Current version: <span style='color:white'>" + currentVersionString + "</span><br />" +
+                                "New version: <span style='color:lime'>" + newVersionString + "</span>"
+                                : "Install KeeperFX <span style='color:lime'>" + newVersionString + "</span>")
+                        +
                         "</html>");
         infoLabel.setBorder(new EmptyBorder(5, 5, 15, 5));
         // infoLabel.setPreferredSize(new Dimension(600, 100));
@@ -315,8 +330,8 @@ public class GameUpdater {
         bottomPanel.add(cancelButton, BorderLayout.PAGE_END);
 
         // "Update" button
-        updateButton.setPreferredSize(new Dimension(150, 50));
-        updateButton.addActionListener(e -> {
+        confirmButton.setPreferredSize(new Dimension(150, 50));
+        confirmButton.addActionListener(e -> {
 
             // Vars for checking if file is locked
             boolean keeperFxFileLocked = false;
@@ -493,8 +508,8 @@ public class GameUpdater {
             this.updateThread.start();
 
         });
-        updateButton.setEnabled(true);
-        bottomPanel.add(updateButton, BorderLayout.PAGE_END);
+        confirmButton.setEnabled(true);
+        bottomPanel.add(confirmButton, BorderLayout.PAGE_END);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -571,8 +586,8 @@ public class GameUpdater {
             Path tempFilePath = null;
 
             // Update buttons
-            updateButton.setText("Updating...");
-            updateButton.setEnabled(false);
+            confirmButton.setText(this.updateType == GameUpdaterType.UPDATE ? "Updating..." : "Installing...");
+            confirmButton.setEnabled(false);
             closeButton.setVisible(false);
             cancelButton.setVisible(true);
 
@@ -784,11 +799,15 @@ public class GameUpdater {
 
                 // Hide dialog and show notice
                 this.dialog.setVisible(false);
-                JOptionPane.showMessageDialog(this.mainWindow,
-                        "Success!\n" +
-                                "Your KeeperFX has been updated to: " + this.newSemver,
-                        "KeeperFX update completed!",
-                        JOptionPane.INFORMATION_MESSAGE);
+
+                // Show "updated" message if update type is updater
+                if (this.updateType == GameUpdaterType.UPDATE) {
+                    JOptionPane.showMessageDialog(this.mainWindow,
+                            "Success!\n" +
+                                    "Your KeeperFX has been updated to: " + this.newSemver,
+                            "KeeperFX update completed!",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
 
                 // Close the dialog. We do this after hiding it and showing the above message so
                 // it doesn't trigger anything before the user clicks ok.
@@ -796,7 +815,9 @@ public class GameUpdater {
 
                 // Run app startup stuff again
                 // This will also update the displayed version
-                Main.main.appStartup();
+                if (this.updateType == GameUpdaterType.UPDATE) {
+                    Main.main.appStartup();
+                }
 
             } catch (InterruptedException ex) {
 
@@ -811,8 +832,8 @@ public class GameUpdater {
             }
 
             // Reset buttons
-            updateButton.setText("Update");
-            updateButton.setEnabled(true);
+            confirmButton.setText("Update");
+            confirmButton.setEnabled(true);
             cancelButton.setVisible(false);
             closeButton.setVisible(true);
 

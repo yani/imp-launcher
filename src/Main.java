@@ -85,11 +85,11 @@ public class Main extends JFrame {
         // Load launcher root dir variable
         Main.loadLauncherRootDir();
 
-        // Run startup checks
-        Main.main.appStartup();
-
         // Load run options
         Main.runOptions = new RunOptions();
+
+        // Run startup checks
+        Main.main.appStartup();
     }
 
     public static void loadLauncherRootDir() {
@@ -335,16 +335,17 @@ public class Main extends JFrame {
                             JOptionPane.INFORMATION_MESSAGE);
                 }
 
-                // TODO: disable messages after update (maybe have Install screen?)
-                //
-
                 // Install Stable version
-                (new GameUpdater(this)).customVersionDownload("None", KfxReleaseType.STABLE);
+                (new GameUpdater(this, GameUpdaterType.INSTALL)).customVersionDownload("None", KfxReleaseType.STABLE);
 
                 // Install Alpha after Stable
                 if (options[selectedOption].equals("Alpha")) {
-                    (new GameUpdater(this)).customVersionDownload(Main.kfxVersion, KfxReleaseType.ALPHA);
+                    (new GameUpdater(this, GameUpdaterType.INSTALL)).customVersionDownload(Main.kfxVersion,
+                            KfxReleaseType.ALPHA);
                 }
+
+                // Run app startup again
+                appStartup();
 
             } else {
 
@@ -479,7 +480,7 @@ public class Main extends JFrame {
                 // Handle possible updates
                 // Only when release is STABLE or ALPHA
                 if (Main.kfxReleaseType == KfxReleaseType.STABLE || Main.kfxReleaseType == KfxReleaseType.ALPHA) {
-                    (new GameUpdater(this)).checkForUpdates();
+                    (new GameUpdater(this, GameUpdaterType.UPDATE)).checkForUpdates();
                 }
 
             } catch (Exception ex) {

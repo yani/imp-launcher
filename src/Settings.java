@@ -365,13 +365,15 @@ public class Settings extends JDialog {
 
             // If we are currently on a prototype
             if (Main.kfxReleaseType == KfxReleaseType.PROTOTYPE) {
-                new Thread(() -> (new GameUpdater(Main.main)).customVersionDownload("Prototype", newKfxReleaseType))
+                new Thread(() -> (new GameUpdater(Main.main, GameUpdaterType.UPDATE)).customVersionDownload("Prototype",
+                        newKfxReleaseType))
                         .start();
             } else {
 
                 // If we are not on a prototype we do a normal update
                 if (newKfxReleaseType == KfxReleaseType.STABLE || newKfxReleaseType == KfxReleaseType.ALPHA) {
-                    new Thread(() -> (new GameUpdater(Main.main)).checkForUpdates(newKfxReleaseType)).start();
+                    new Thread(() -> (new GameUpdater(Main.main, GameUpdaterType.UPDATE))
+                            .checkForUpdates(newKfxReleaseType)).start();
                 }
             }
         }
