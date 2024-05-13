@@ -694,6 +694,9 @@ public class GameUpdater {
                         || fileName.equals("keeperfx-1.0.0-complete-no-bcj2.7z ")) {
                     totalArchiveFileCount = 5122;
                 }
+                if (fileName.equals("keeperfx_1_1_0_complete.7z")) {
+                    totalArchiveFileCount = 5248;
+                }
 
                 // Count files
                 if (totalArchiveFileCount == 0) {
