@@ -323,6 +323,13 @@ public class Main extends JFrame {
 
                 System.out.println("Selected option: " + options[selectedOption]);
 
+                // Set the release type
+                if (options[selectedOption].equals("Stable")) {
+                    Main.kfxReleaseType = KfxReleaseType.STABLE;
+                } else if (options[selectedOption].equals("Alpha")) {
+                    Main.kfxReleaseType = KfxReleaseType.ALPHA;
+                }
+
                 // Tell the user the 'update' process is ran twice when
                 // selecting an alpha patch.
                 if (options[selectedOption].equals("Alpha")) {
