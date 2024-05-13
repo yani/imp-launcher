@@ -64,12 +64,6 @@ public class SettingsSuggestion {
             Main.runOptions.saveOptionsToFile();
         } catch (Exception ex) {
         }
-
-        // Set to ALPHA and start update process
-        if (Main.kfxReleaseType != KfxReleaseType.ALPHA) {
-            new Thread(() -> (new GameUpdater(Main.main, GameUpdaterType.UPDATE)).checkForUpdates(KfxReleaseType.ALPHA))
-                    .start();
-        }
     }
 
     public static Rectangle getScreenSize(int displayIndex) {
