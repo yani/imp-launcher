@@ -141,6 +141,14 @@ public class IndexPanel extends JPanel {
 
                 // Get image
                 String imageURL = (String) item.get("image");
+
+                // Don't allow webp images
+                // They don't work with the Java image scaler
+                if (imageURL.toLowerCase().endsWith(".webp")) {
+                    imageURL = "https://keeperfx.net/img/no-image-256.png";
+                }
+
+                // Get image from webserver
                 HttpRequest request = HttpRequest.newBuilder(new URI(imageURL)).build();
                 HttpResponse<byte[]> response = imgHttpClient.send(request,
                         HttpResponse.BodyHandlers.ofByteArray());
