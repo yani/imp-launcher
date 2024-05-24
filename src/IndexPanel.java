@@ -149,14 +149,22 @@ public class IndexPanel extends JPanel {
                     continue;
                 }
 
-                // Convert the image bytes to an Image object
-                byte[] imageBytes = response.body();
-                Image image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-                image = image.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                try {
+                    // Convert the image bytes to an Image object
+                    byte[] imageBytes = response.body();
+                    Image image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+                    image = image.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
 
-                // Create image label and add to item panel
-                JLabel imageLabel = new JLabel(new ImageIcon(image));
-                workshopItem.add(imageLabel, BorderLayout.LINE_START);
+                    // Create image label and add to item panel
+                    JLabel imageLabel = new JLabel(new ImageIcon(image));
+                    workshopItem.add(imageLabel, BorderLayout.LINE_START);
+
+                } catch (Exception ex) {
+
+                    // Image broke something, lets skip the item
+                    continue;
+
+                }
 
                 //////////////////////////////////////////////////////////////////
                 //////////////////////////////////////////////////////////////////
