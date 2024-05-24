@@ -160,10 +160,8 @@ public class IndexPanel extends JPanel {
                     workshopItem.add(imageLabel, BorderLayout.LINE_START);
 
                 } catch (Exception ex) {
-
                     // Image broke something, lets skip the item
                     continue;
-
                 }
 
                 //////////////////////////////////////////////////////////////////
