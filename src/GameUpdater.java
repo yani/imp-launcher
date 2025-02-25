@@ -145,7 +145,8 @@ public class GameUpdater {
 
         System.out.println("Checking for Stable update..");
 
-        JSONObject json = HttpUtil.getJsonObjectFromRestAPI(URI.create("https://keeperfx.net/api/v1/stable/latest"));
+        JSONObject json = HttpUtil
+                .getJsonObjectFromRestAPI(URI.create("https://keeperfx.net/api/v1/release/stable/latest"));
         JSONObject releaseObj = (JSONObject) json.get("release");
 
         String releaseName = (String) releaseObj.get("name");
@@ -183,7 +184,8 @@ public class GameUpdater {
 
         System.out.println("Checking for Alpha update..");
 
-        JSONObject json = HttpUtil.getJsonObjectFromRestAPI(URI.create("https://keeperfx.net/api/v1/alpha/latest"));
+        JSONObject json = HttpUtil
+                .getJsonObjectFromRestAPI(URI.create("https://keeperfx.net/api/v1/release/alpha/latest"));
         JSONObject releaseObj = (JSONObject) json.get("alpha_build");
 
         String alphaBuildName = (String) releaseObj.get("name");
