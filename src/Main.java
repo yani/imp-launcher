@@ -499,36 +499,6 @@ public class Main extends JFrame {
 
         // Show version in GUI
         Main.updateDisplayVersion();
-
-        // Show live count of multiplayer lobbies
-        new Thread(() -> {
-            while (true) {
-                try {
-                    // Get the masterserver host
-                    String masterServerHost = (String) Main.keeperFxCfg.get("MASTERSERVER_HOST");
-                    if (masterServerHost.isEmpty()) {
-                        continue;
-                    }
-
-                    // Get the lobby count
-                    int count = Masterserver.getLobbyCount(masterServerHost);
-                    if (count == -1 || count == 0) {
-                        Main.mpLobbyCountLabel.setText("");
-                    } else if (count == 1) {
-                        Main.mpLobbyCountLabel.setText(
-                                "<html><span style='color: white;'>" + count + "</span> open MP lobby!</html>");
-                    } else {
-                        Main.mpLobbyCountLabel.setText(
-                                "<html><span style='color: white;'>" + count + "</span> open MP lobbies!</html>");
-                    }
-
-                    // Sleep 10 seconds
-                    Thread.sleep(10000);
-                } catch (Exception ex) {
-                }
-            }
-
-        }).start();
     }
 
     public void enablePlayButton() {
